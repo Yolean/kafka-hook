@@ -10,7 +10,7 @@ public class IncomingWebhookExtension implements Extension {
   @Override
   public Object getValue(String key) {
     if ("todo".equals(key)) {
-      return new Object();
+      return true;
     }
     throw new UnsupportedOperationException("TODO key: " + key);
   }

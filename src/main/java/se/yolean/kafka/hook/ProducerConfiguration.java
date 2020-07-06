@@ -2,6 +2,7 @@ package se.yolean.kafka.hook;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serializer;
@@ -31,5 +32,17 @@ public interface ProducerConfiguration {
 
   @ConfigProperty(name = ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG)
   Class<? extends Serializer<CloudEvent>> getVallueSerializer();
+
+  @ConfigProperty(name = ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG)
+  Optional<Integer> getDeliveryTimeoutMs();
+
+  @ConfigProperty(name = ProducerConfig.LINGER_MS_CONFIG)
+  Optional<Integer> getLingerMs();
+
+  @ConfigProperty(name = ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG)
+  Optional<Integer> getRequestTimeoutMs();
+
+  @ConfigProperty(name = ProducerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG)
+  Optional<Integer> getConnectionMaxIdleMs();
 
 }
