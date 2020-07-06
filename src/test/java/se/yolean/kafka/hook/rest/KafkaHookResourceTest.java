@@ -16,9 +16,9 @@ public class KafkaHookResourceTest {
     byte[] body = "test".getBytes();
     given()
       .contentType(ContentType.TEXT)
-      //.accept(ContentType.TEXT) // You get a 406 if path + content-type is right but accept isn't a @Produces
+      .accept(ContentType.JSON) // TODO will the v1 API care about accept?
       .body(body)
-      .when().post("/messages") // You get a 405 if there's the method isn't supported on this path
+      .when().post("/v1") // You get a 405 if there's the method isn't supported on this path
       .then()
         .statusCode(500)
         .body(is("Failed to submit message"));

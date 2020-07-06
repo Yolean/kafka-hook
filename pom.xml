@@ -78,6 +78,7 @@
         <configuration>
           <sourceDirectory>${basedir}/src/main/resources/v1-schema</sourceDirectory>
           <targetPackage>se.yolean.kafka.hooks.v1.types</targetPackage>
+          <sourceType>yamlschema</sourceType>
           <generateBuilders>false</generateBuilders>
         </configuration>
         <executions>

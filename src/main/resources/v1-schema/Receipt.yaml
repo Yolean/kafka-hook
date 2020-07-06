@@ -1,0 +1,9 @@
+type: object
+additionalProperties: false
+properties:
+  partition:
+    type: integer
+    minValue: 0
+  offset:
+    type: integer
+    minValue: 0
