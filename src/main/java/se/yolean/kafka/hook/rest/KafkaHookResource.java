@@ -2,6 +2,11 @@ package se.yolean.kafka.hook.rest;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.time.temporal.TemporalUnit;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -14,6 +19,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +31,7 @@ import se.yolean.kafka.hook.cloudevents.IncomingWebhookExtension;
 import se.yolean.kafka.hooks.v1.types.Datadef;
 import se.yolean.kafka.hooks.v1.types.Key;
 import se.yolean.kafka.hooks.v1.types.Message;
+import se.yolean.kafka.hooks.v1.types.Receipt;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/" + KafkaHookResource.API_VERSION)
@@ -45,16 +52,30 @@ public class KafkaHookResource {
   @POST
   @Path("{anypath}")
   public Response produce(@Context HttpHeaders headers, @PathParam("anypath") String anypath, InputStream body) {
-    // TODO figure out how to use the DistributedTracingExtension cloudevents extension, for example given headers from envoy (so we don't try to do that in our own extension)
     IncomingWebhookExtension context = new IncomingWebhookExtension();
-    CloudEvent event = CloudEventBuilder.v1()
+    CloudEvent message = CloudEventBuilder.v1()
         .withId("hello")
         .withType("example.kafka")
         .withSource(URI.create("http://localhost"))
         .withExtension(context)
         .build();
-
-    return Response.ok("TODO", MediaType.TEXT_PLAIN).build();
+    Key key = new Key();
+    Future<RecordMetadata> resultMaybe = producer.send(key, message);
+    RecordMetadata result;
+    try {
+      result = resultMaybe.get(timeouts.getProduceFromHttp().getSeconds(), TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      return Response.serverError().entity(e).build();
+    } catch (TimeoutException e) {
+      return Response.serverError().entity(e).build();
+    } catch (ExecutionException e) {
+      return Response.serverError().entity(e).build();
+    }
+    Receipt receipt = new Receipt();
+    receipt.setPartition(result.partition());
+    receipt.setOffset(result.offset());
+    receipt.setTimestamp(result.timestamp());
+    return Response.ok(receipt, MediaType.APPLICATION_JSON).build();
   }
 
 }

@@ -16,12 +16,12 @@ public class KafkaHookResourceTest {
     byte[] body = "test".getBytes();
     given()
       .contentType(ContentType.TEXT)
-      .accept(ContentType.JSON) // TODO will the v1 API care about accept?
+      .accept(ContentType.JSON) // TODO will the v1 API care about Accept?
       .body(body)
       .when().post("/v1") // You get a 405 if there's the method isn't supported on this path
       .then()
         .statusCode(500)
-        .body(is("Failed to submit message"));
+        .body(is("TODO define response for: failed to submit message"));
   }
 
 }

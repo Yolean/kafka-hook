@@ -3,6 +3,7 @@ package se.yolean.kafka.hook.rest;
 import com.salesforce.kafka.test.junit5.SharedKafkaTestResource;
 import com.salesforce.kafka.test.listeners.PlainListener;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -30,8 +31,14 @@ public class KafkaHookResourceIT {
       .body(body)
       .when().post("/v1")
       .then()
-        .statusCode(500)
-        .body(is("Failed to submit message"));
+        .statusCode(200)
+        .body(is("TODO define receipt"));
+  }
+
+  @Disabled
+  @Test
+  public void testCloudeventsDistributedTracingExtensionWithEnvoyHeaders() {
+    // TODO figure out how to use the DistributedTracingExtension cloudevents extension, for example given headers from envoy (so we don't try to do that in our own extension)
   }
 
 }

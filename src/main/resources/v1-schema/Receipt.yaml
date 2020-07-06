@@ -7,3 +7,8 @@ properties:
   offset:
     type: integer
     minValue: 0
+    # Not true but we need a Long
+    format: utc-millisec
+  timestamp:
+    type: integer
+    format: utc-millisec
