@@ -28,20 +28,8 @@ public interface ProducerConfigurationTemp {
     props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, c.getEnableIdempotence());
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, c.getKeySerializer());
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, c.getVallueSerializer());
-    if (c.getDeliveryTimeoutMs().isPresent()) {
-      props.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, c.getDeliveryTimeoutMs().orElseThrow());
-    }
-    if (c.getLingerMs().isPresent()) {
-      props.put(ProducerConfig.LINGER_MS_CONFIG, c.getLingerMs().orElseThrow());
-    }
     if (c.getRequestTimeoutMs().isPresent()) {
       props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, c.getRequestTimeoutMs().orElseThrow());
-    }
-    if (c.getConnectionMaxIdleMs().isPresent()) {
-      props.put(ProducerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, c.getConnectionMaxIdleMs().orElseThrow());
-    }
-    if (c.getRetries().isPresent()) {
-      props.put(ProducerConfig.RETRIES_CONFIG, c.getRetries().orElseThrow());
     }
     if (c.getMaxBlockMs().isPresent()) {
       props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, c.getMaxBlockMs().orElseThrow());

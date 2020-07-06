@@ -33,20 +33,8 @@ public interface ProducerConfiguration {
   @ConfigProperty(name = ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG)
   Class<? extends Serializer<CloudEvent>> getVallueSerializer();
 
-  @ConfigProperty(name = ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG)
-  Optional<Integer> getDeliveryTimeoutMs();
-
-  @ConfigProperty(name = ProducerConfig.LINGER_MS_CONFIG)
-  Optional<Integer> getLingerMs();
-
   @ConfigProperty(name = ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG)
   Optional<Integer> getRequestTimeoutMs();
-
-  @ConfigProperty(name = ProducerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG)
-  Optional<Integer> getConnectionMaxIdleMs();
-
-  @ConfigProperty(name = ProducerConfig.RETRIES_CONFIG)
-  Optional<Integer> getRetries();
 
   @ConfigProperty(name = ProducerConfig.MAX_BLOCK_MS_CONFIG)
   Optional<Integer> getMaxBlockMs();
