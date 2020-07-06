@@ -45,4 +45,7 @@ public interface ProducerConfiguration {
   @ConfigProperty(name = ProducerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG)
   Optional<Integer> getConnectionMaxIdleMs();
 
+  @ConfigProperty(name = ProducerConfig.RETRIES_CONFIG)
+  Optional<Integer> getRetries();
+
 }

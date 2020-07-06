@@ -40,6 +40,9 @@ public interface ProducerConfigurationTemp {
     if (c.getConnectionMaxIdleMs().isPresent()) {
       props.put(ProducerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, c.getConnectionMaxIdleMs().orElseThrow());
     }
+    if (c.getRetries().isPresent()) {
+      props.put(ProducerConfig.RETRIES_CONFIG, c.getRetries().orElseThrow());
+    }
     return props;
   }
 
