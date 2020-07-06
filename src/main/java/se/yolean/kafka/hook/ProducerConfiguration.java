@@ -48,4 +48,7 @@ public interface ProducerConfiguration {
   @ConfigProperty(name = ProducerConfig.RETRIES_CONFIG)
   Optional<Integer> getRetries();
 
+  @ConfigProperty(name = ProducerConfig.MAX_BLOCK_MS_CONFIG)
+  Optional<Integer> getMaxBlockMs();
+
 }

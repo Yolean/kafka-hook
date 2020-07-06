@@ -43,6 +43,9 @@ public interface ProducerConfigurationTemp {
     if (c.getRetries().isPresent()) {
       props.put(ProducerConfig.RETRIES_CONFIG, c.getRetries().orElseThrow());
     }
+    if (c.getMaxBlockMs().isPresent()) {
+      props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, c.getMaxBlockMs().orElseThrow());
+    }
     return props;
   }
 
