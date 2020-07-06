@@ -21,7 +21,7 @@ public class KafkaHookResourceTest {
       .when().post("/v1") // You get a 405 if there's the method isn't supported on this path
       .then()
         .statusCode(500)
-        .body(is("TODO define response for: failed to submit message"));
+        .body(is("\"PRODUCE_TIMEOUT\""));
   }
 
 }

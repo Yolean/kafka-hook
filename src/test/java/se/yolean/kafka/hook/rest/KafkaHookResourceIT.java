@@ -13,6 +13,7 @@ import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.UnsupportedEncodingException;
@@ -38,7 +39,7 @@ public class KafkaHookResourceIT {
       .when().post("/v1")
       .then()
         .statusCode(500)
-        .body(is("TODO define error message"));
+        .body(is("\"PRODUCE_TIMEOUT\""));
   }
 
   @Test
@@ -51,7 +52,7 @@ public class KafkaHookResourceIT {
       .when().post("/v1")
       .then()
         .statusCode(200)
-        .body(is("TODO define receipt"));
+        .body(containsString("\"partition\":0"));
     List<ConsumerRecord<byte[], byte[]>> records =
       kafka.getKafkaTestUtils().consumeAllRecordsFromTopic("events.stream.json");
     assertEquals(1, records.size(), "Should have produced one message");
