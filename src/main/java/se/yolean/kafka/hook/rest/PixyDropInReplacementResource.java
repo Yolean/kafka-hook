@@ -12,7 +12,7 @@ public class PixyDropInReplacementResource {
 
   @POST
   @Path("/{topic: ^[^/]+$}/messages")
-  Response pixy() {
+  public Response pixy() {
     throw new UnsupportedOperationException("Not implemented");
   }
 

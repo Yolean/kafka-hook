@@ -1,4 +1,0 @@
-type: object
-extends:
-  $ref: https://github.com/cloudevents/spec/raw/b4f9c3fa87a08d06f8522b82ad7633eace321a70/spec.json
-additionalProperties: false
