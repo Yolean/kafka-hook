@@ -26,10 +26,10 @@ import org.slf4j.MDC;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
-import se.yolean.kafka.hook.HookError;
 import se.yolean.kafka.hook.Producer;
 import se.yolean.kafka.hook.TimeoutConfiguration;
 import se.yolean.kafka.hook.cloudevents.IncomingWebhookExtension;
+import se.yolean.kafka.hooks.v1.types.HookError;
 import se.yolean.kafka.hooks.v1.types.Key;
 import se.yolean.kafka.hooks.v1.types.Receipt;
 
@@ -69,15 +69,15 @@ public class KafkaHookResource {
     } catch (TimeoutException e) {
       return Response.serverError().entity(e.toString()).build();
     } catch (ExecutionException e) {
-      HookError err = HookError.UNKNOWN;
+      HookError err = new HookError();
       if (e.getCause() != null) {
         MDC.put("cause", e.getClass().getName());
         MDC.put("message", e.getMessage());
         if (e.getCause() instanceof org.apache.kafka.common.errors.TimeoutException) {
-          err = HookError.PRODUCE_TIMEOUT;
+          err.setError(HookError.Error.WRITE_TIMEOUT);
         }
       }
-      MDC.put("err", err.toString());
+      MDC.put("err", err.getError().toString());
       logger.error("Producer send failed", e);
       return Response.serverError().entity(err).build();
     }

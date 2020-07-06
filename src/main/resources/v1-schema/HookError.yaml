@@ -1,0 +1,8 @@
+type: object
+properties:
+  error:
+    type: string
+    default: UNCATEGORIZED
+    enum:
+    - UNCATEGORIZED
+    - WRITE_TIMEOUT

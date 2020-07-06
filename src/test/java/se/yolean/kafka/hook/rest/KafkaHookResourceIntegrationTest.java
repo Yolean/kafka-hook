@@ -39,7 +39,7 @@ public class KafkaHookResourceIntegrationTest {
       .when().post("/v1")
       .then()
         .statusCode(500)
-        .body(is("\"PRODUCE_TIMEOUT\""));
+        .body(is("{\"error\":\"WRITE_TIMEOUT\"}"));
   }
 
   @Test
