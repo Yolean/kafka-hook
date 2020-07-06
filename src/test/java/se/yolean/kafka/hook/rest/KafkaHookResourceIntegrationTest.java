@@ -20,7 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @QuarkusTest
-public class KafkaHookResourceIT {
+public class KafkaHookResourceIntegrationTest {
 
   public static final int TEST_KAFKA_PORT = 19092;
 
