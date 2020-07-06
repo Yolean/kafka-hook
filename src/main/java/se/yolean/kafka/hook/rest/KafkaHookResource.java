@@ -58,6 +58,7 @@ public class KafkaHookResource {
         .withType("example.kafka")
         .withSource(URI.create("http://localhost"))
         .withExtension(context)
+        .withData("TODO data from inputstream".getBytes())
         .build();
     Key key = new Key();
     Future<RecordMetadata> resultMaybe = producer.send(key, message);

@@ -1,6 +1,5 @@
 package se.yolean.kafka.hook;
 
-import java.io.Serializable;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;

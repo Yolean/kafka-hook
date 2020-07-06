@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import io.cloudevents.CloudEvent;
 import io.quarkus.runtime.ShutdownEvent;
+import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import se.yolean.kafka.hooks.v1.types.Key;
 
@@ -22,6 +23,7 @@ import se.yolean.kafka.hooks.v1.types.Key;
  * This isn't meant to be an abstraction (we try to avoid Kafka client abstractions)
  * - only a means of initializing and destroying the producer.
  */
+@Startup
 @ApplicationScoped
 public class Producer {
 
