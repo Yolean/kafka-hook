@@ -14,12 +14,6 @@ public interface ProducerConfigurationTemp {
   
   /*@ConfigIgnore*/ static Duration PRODUCER_CLOSE_TIMEOUT = Duration.ofSeconds(10);
 
-  // The following static blocks need to be maintained together with the ConfigProperty items below
-  /*@ConfigIgnore*/ static Class<?>[] KNOWN_SERIALIZERS = { // Native complie needs to know about these classes
-    io.quarkus.kafka.client.serialization.ObjectMapperSerializer.class,
-    io.cloudevents.kafka.CloudEventSerializer.class
-  };
-
   /*@ConfigIgnore*/ static Map<String,Object> toProps(ProducerConfiguration c) {
     Map<String, Object> props = new HashMap<>(10);
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, c.getBootstrapServer());
