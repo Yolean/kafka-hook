@@ -10,6 +10,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +39,10 @@ public class KafkaHookResourceIntegrationTest {
 
   public static final int TEST_KAFKA_PORT = 19092;
 
-  static KafkaConsumer<String, String> consumer = null;
-  static AdminClient adminClient = null;
+  private KafkaConsumer<String, String> consumer = null;
+  private AdminClient adminClient = null;
+  private TopicPartition tp = null;
+  private Duration pollTime = Duration.ofMillis(100);
 
   @RegisterExtension
   static final SharedKafkaTestResource kafka = new SharedKafkaTestResource()
@@ -47,19 +51,26 @@ public class KafkaHookResourceIntegrationTest {
 
   @BeforeEach
   public void kafkaOpen() throws Exception {
-    Map<String, Object> props = new HashMap<>(10);
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:" + TEST_KAFKA_PORT);
-    adminClient = AdminClient.create(props);
+    NewTopic newTopic = new NewTopic("events.stream.json", 1, (short) 1);
+    tp = new TopicPartition(newTopic.name(), 0);
+    Map<String, Object> adminProps = new HashMap<>(10);
+    adminProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:" + TEST_KAFKA_PORT);
+    adminClient = AdminClient.create(adminProps);
     adminClient.listTopics();
-    CreateTopicsResult result = adminClient
-        .createTopics(Arrays.asList(new NewTopic("events.stream.json", 1, (short) 1)));
-    result.all().get();
+    CreateTopicsResult create = adminClient.createTopics(Arrays.asList(newTopic));
+    assertEquals(1, create.numPartitions(tp.topic()).get());
+    waitBetweenPolls();
+    Map<String, Object> props = new HashMap<>(10);
     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:" + TEST_KAFKA_PORT);
     props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
     props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-    //props.put(ConsumerConfig.GROUP_ID_CONFIG, this.getClass().getName());
-    //props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+    props.put(ConsumerConfig.GROUP_ID_CONFIG, this.getClass().getName() + System.currentTimeMillis());
+    props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
     consumer = new KafkaConsumer<>(props);
+    consumer.assign(Arrays.asList(tp));
+    consumer.seek(tp, 0);
+    assertEquals(0, consumer.poll(Duration.ofMillis(1)).count());
+    consumer.commitSync();
   }
 
   @AfterEach
@@ -68,11 +79,27 @@ public class KafkaHookResourceIntegrationTest {
     adminClient.close();
   }
 
+  // Maybe test robustness depends on how we poll and leave idle time between
+  // polls
+  private void waitBetweenPolls() {
+    try {
+      Thread.sleep(pollTime.toMillis());
+    } catch (Exception e) {
+      throw new RuntimeException("What's happening", e);
+    }
+  }
+
   @Disabled // need to find a way to change topic name
   @Test
   public void testProduceStringNonexistentTopic() {
-    given().contentType(ContentType.TEXT).accept(ContentType.JSON).body("test1".getBytes()).when().post("/v1").then()
-        .statusCode(500).body(is("{\"error\":\"WRITE_TIMEOUT\"}"));
+    given()
+      .contentType(ContentType.TEXT)
+      .accept(ContentType.JSON)
+      .body("test0".getBytes())
+      .when().post("/v1")
+      .then()
+        .body(is("{\"error\":\"WRITE_TIMEOUT\"}"))
+        .statusCode(500);
   }
 
   @Test
@@ -80,7 +107,7 @@ public class KafkaHookResourceIntegrationTest {
     given()
       .contentType(ContentType.TEXT)
       .accept(ContentType.JSON)
-      .body("test2".getBytes())
+      .body("test1".getBytes())
       .when().post("/v1")
       .then()
         .body(containsString("\"partition\":0"))
@@ -89,17 +116,20 @@ public class KafkaHookResourceIntegrationTest {
     given()
       .contentType(ContentType.TEXT)
       .accept(ContentType.JSON)
-      .body("test3".getBytes())
+      .body("test2".getBytes())
       .when().post("/v1")
       .then()
         .body(containsString("\"offset\":1"))
         .statusCode(200);
-    try { Thread.sleep(60000); } catch (Exception e) {}
-    consumer.subscribe(Arrays.asList("events.stream.json"));
-    assertEquals(0, consumer.poll(Duration.ofMillis(1)).count());
+    waitBetweenPolls();
     ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
     assertEquals(2, records.count(), "Should have produced one message");
-    assertEquals("", records.iterator().next().value());
+    Iterator<ConsumerRecord<String, String>> it = records.iterator();
+    ConsumerRecord<String, String> record1 = it.next();
+    ConsumerRecord<String, String> record2 = it.next();
+    assertEquals("test1", record1.value());
+    assertEquals("test2", record2.value());
+    consumer.commitSync();
   }
 
   @Disabled
