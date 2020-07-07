@@ -12,12 +12,15 @@ public class IncomingWebhookExtension implements Extension {
     if ("todo".equals(key)) {
       return true;
     }
+    if (key.startsWith("randomkey")) {
+      return "Ok" + System.currentTimeMillis();
+    }
     throw new UnsupportedOperationException("TODO key: " + key);
   }
   
   @Override
   public Set<String> getKeys() {
-    return Set.of("todo");
+    return Set.of("todo", "randomkey" + System.currentTimeMillis());
   }
 
   @Override

@@ -26,6 +26,7 @@ import org.slf4j.MDC;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
+import se.yolean.kafka.hook.CloudEventExtender;
 import se.yolean.kafka.hook.Producer;
 import se.yolean.kafka.hook.TimeoutConfiguration;
 import se.yolean.kafka.hook.cloudevents.IncomingWebhookExtension;
@@ -43,6 +44,7 @@ public class KafkaHookResource {
 
   @Inject Producer producer;
   @Inject TimeoutConfiguration timeouts;
+  @Inject CloudEventExtender extensions;
 
   @POST
   public Response produce(@Context HttpHeaders headers, InputStream body) {
