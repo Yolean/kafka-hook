@@ -127,6 +127,7 @@ public class KafkaHookResourceIntegrationTest {
     Iterator<ConsumerRecord<String, String>> it = records.iterator();
     ConsumerRecord<String, String> record1 = it.next();
     ConsumerRecord<String, String> record2 = it.next();
+    // https://github.com/cloudevents/spec/blob/bf71de532ca3e69ab2fe5854a1f31f647894dae4/kafka-protocol-binding.md#325-example
     assertEquals("test1", record1.value());
     assertEquals("test2", record2.value());
     consumer.commitSync();

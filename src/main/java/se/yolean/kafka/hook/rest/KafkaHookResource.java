@@ -1,5 +1,6 @@
 package se.yolean.kafka.hook.rest;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.time.temporal.TemporalUnit;
@@ -18,6 +19,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
@@ -26,7 +28,7 @@ import org.slf4j.MDC;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
-import se.yolean.kafka.hook.CloudEventExtender;
+import se.yolean.kafka.hook.CloudeventExtender;
 import se.yolean.kafka.hook.Producer;
 import se.yolean.kafka.hook.TimeoutConfiguration;
 import se.yolean.kafka.hook.cloudevents.IncomingWebhookExtension;
@@ -44,23 +46,26 @@ public class KafkaHookResource {
 
   @Inject Producer producer;
   @Inject TimeoutConfiguration timeouts;
-  @Inject CloudEventExtender extensions;
+  @Inject CloudeventExtender extensions;
 
   @POST
-  public Response produce(@Context HttpHeaders headers, InputStream body) {
-    return produce(headers, "", body);
+  public Response produce(@Context HttpHeaders headers, @Context UriInfo uri, InputStream payload) throws IOException {
+    return produce(headers, uri, "", payload);
   }
 
   @POST
   @Path("{anypath}")
-  public Response produce(@Context HttpHeaders headers, @PathParam("anypath") String anypath, InputStream body) {
-    IncomingWebhookExtension context = new IncomingWebhookExtension();
+  public Response produce(@Context HttpHeaders headers, @Context UriInfo uri, @PathParam("anypath") String anypath, InputStream payload)
+      // if we fail to read the payload, which would be very strange
+      throws IOException {
+    HookError err = new HookError();
     CloudEvent message = CloudEventBuilder.v1()
         .withId("hello")
         .withType("example.kafka")
         .withSource(URI.create("http://localhost"))
-        .withExtension(context)
-        .withData("TODO data from inputstream".getBytes())
+        .withExtension(extensions.getTracing(headers))
+        .withExtension(extensions.getHttp(headers, uri))
+        .withData(payload.readAllBytes())
         .build();
     Key key = new Key();
     Future<RecordMetadata> resultMaybe = producer.send(key, message);
@@ -68,11 +73,12 @@ public class KafkaHookResource {
     try {
       result = resultMaybe.get(timeouts.getProduceFromHttp().getSeconds(), TimeUnit.SECONDS);
     } catch (InterruptedException e) {
-      return Response.serverError().entity(e.toString()).build();
+      logger.error("Producer send interrupted", e);
+      return Response.serverError().entity(err).build();
     } catch (TimeoutException e) {
-      return Response.serverError().entity(e.toString()).build();
+      logger.error("Producer send timeout", e);
+      return Response.serverError().entity(err).build();
     } catch (ExecutionException e) {
-      HookError err = new HookError();
       if (e.getCause() != null) {
         MDC.put("cause", e.getClass().getName());
         MDC.put("message", e.getMessage());
