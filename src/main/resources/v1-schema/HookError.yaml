@@ -5,4 +5,6 @@ properties:
     default: UNCATEGORIZED
     enum:
     - UNCATEGORIZED
+    - INTERRUPTED
+    - TIMEOUT
     - WRITE_TIMEOUT

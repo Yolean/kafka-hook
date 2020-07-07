@@ -133,10 +133,18 @@ public class KafkaHookResourceIntegrationTest {
     consumer.commitSync();
   }
 
-  @Disabled
   @Test
   public void testCloudeventsDistributedTracingExtensionWithEnvoyHeaders() {
     // TODO figure out how to use the DistributedTracingExtension cloudevents extension, for example given headers from envoy (so we don't try to do that in our own extension)
+    given()
+      .contentType(ContentType.TEXT)
+      .accept(ContentType.JSON)
+      .body("test1".getBytes())
+      .when().post("/v1")
+      .then()
+        .body(containsString("\"partition\":0"))
+        .body(containsString("\"offset\":0"))
+        .statusCode(200);
   }
 
 }

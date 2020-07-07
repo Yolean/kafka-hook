@@ -13,16 +13,13 @@ public interface CloudeventConfiguration {
   @ConfigProperty(defaultValue = "tracestate")
   String getTracestateHeader();
 
+  @ConfigProperty(defaultValue = "xyhttp_")
+  String getHttpExtensionPrefix();
+
   /**
    * @return regex for header names to exclude (matching will be case insensitive)
    */
   @ConfigProperty(defaultValue = "^(cookie)$")
   String getHttpHeadersExclude();
-
-  @ConfigProperty(defaultValue = "97")
-  Integer getHttpHeaderValueLengthCap();
-
-  @ConfigProperty(defaultValue = "...")
-  Integer getHttpHeaderValueEllipsis();
 
 }
