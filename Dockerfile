@@ -9,7 +9,10 @@ RUN set -e; \
   echo "Quarkus version: $QUARKUS_VERSION"; \
   mkdir -p src/test/java/org; \
   echo 'package org; public class T { @org.junit.jupiter.api.Test public void t() { } }' > src/test/java/org/T.java; \
-  mvn package -Pnative -Dquarkus.native.additional-build-args=--dry-run \
+  mkdir -p src/main/resources/v1-schema; \
+  echo 'type: object' > src/main/resources/v1-schema/Dummy.yaml; \
+  mvn --batch-mode package; \
+  mvn --batch-mode package -Pnative -Dquarkus.native.additional-build-args=--dry-run \
   || echo "= BUILD ERROR IS OK: Caching dependencies."; \
   rm -r src
 
