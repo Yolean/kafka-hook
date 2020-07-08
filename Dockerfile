@@ -20,7 +20,9 @@ CMD [ "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=8090" ]
 
 # The jar and the lib folder is required for the jvm target even when the native target is the end result
 # Also we want to run the tests here, regardless of build target
-RUN mvn --batch-mode package
+#RUN mvn --batch-mode package
+# TEMP
+RUN mvn --batch-mode package -Dmaven.test.skip=true
 # Produce the input to native builds, it's cheap until we actually run native-image
 RUN mvn --batch-mode package -Pnative -Dquarkus.native.additional-build-args=--dry-run -Dmaven.test.skip=true \
   || echo "= BUILD ERROR IS OK: Producing native-image source jar."
