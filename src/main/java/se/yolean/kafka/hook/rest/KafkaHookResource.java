@@ -3,6 +3,7 @@ package se.yolean.kafka.hook.rest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +27,7 @@ import org.slf4j.MDC;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
+import se.yolean.kafka.hook.CloudeventConfiguration;
 import se.yolean.kafka.hook.CloudeventExtender;
 import se.yolean.kafka.hook.Producer;
 import se.yolean.kafka.hook.LimitsConfiguration;
@@ -40,6 +42,7 @@ public class KafkaHookResource {
   static final Logger logger = LoggerFactory.getLogger(KafkaHookResource.class);
 
   @Inject Producer producer;
+  @Inject CloudeventConfiguration config;
   @Inject LimitsConfiguration limits;
   @Inject CloudeventExtender extensions;
 
@@ -53,13 +56,14 @@ public class KafkaHookResource {
   public Response produce(@Context HttpHeaders headers, @Context UriInfo uri, @PathParam("anypath") String anypath, InputStream payload)
       // if we fail to read the payload, which would be very strange
       throws IOException {
+    final String id = UUID.randomUUID().toString();
     HookError err = new HookError();
     byte[] data = payload.readAllBytes();
     // TODO handle too large payloads
     CloudEvent message = CloudEventBuilder.v1()
-        .withId("hello")
-        .withType("example.kafka")
-        .withSource(URI.create("http://localhost"))
+        .withId(id)
+        .withType(config.getTypeFixed())
+        .withSource(URI.create("http://kafka-hook/hook/v1" + anypath))
         .withExtension(extensions.getTracing(headers))
         .withExtension(extensions.getHttp(headers, uri))
         .withData(data)
@@ -90,6 +94,7 @@ public class KafkaHookResource {
       return Response.serverError().entity(err).build();
     }
     Receipt receipt = new Receipt();
+    receipt.setId(id);
     receipt.setPartition(result.partition());
     receipt.setOffset(result.offset());
     receipt.setTimestamp(result.timestamp());

@@ -1,6 +1,8 @@
 type: object
 additionalProperties: false
 properties:
+  id:
+    type: string
   partition:
     type: integer
     minValue: 0

@@ -7,6 +7,8 @@ import io.quarkus.arc.config.ConfigProperties;
 @ConfigProperties
 public interface CloudeventConfiguration {
 
+  String getTypeFixed();
+
   @ConfigProperty(defaultValue = "traceparent")
   String getTraceparentHeader();
   
