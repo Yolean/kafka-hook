@@ -18,7 +18,7 @@ public class KafkaHookResourceTest {
       .contentType(ContentType.TEXT)
       .accept(ContentType.JSON) // TODO will the v1 API care about Accept?
       .body(body)
-      .when().post("/v1") // You get a 405 if there's the method isn't supported on this path
+      .when().post("/hook/v1") // You get a 405 if there's the method isn't supported on this path
       .then()
         .statusCode(500)
         .body(is("{\"error\":\"WRITE_TIMEOUT\"}"));

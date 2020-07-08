@@ -3,13 +3,11 @@ package se.yolean.kafka.hook.rest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.time.temporal.TemporalUnit;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -31,16 +29,13 @@ import io.cloudevents.core.builder.CloudEventBuilder;
 import se.yolean.kafka.hook.CloudeventExtender;
 import se.yolean.kafka.hook.Producer;
 import se.yolean.kafka.hook.LimitsConfiguration;
-import se.yolean.kafka.hook.cloudevents.IncomingWebhookExtension;
 import se.yolean.kafka.hooks.v1.types.HookError;
 import se.yolean.kafka.hooks.v1.types.Key;
 import se.yolean.kafka.hooks.v1.types.Receipt;
 
 @Produces(MediaType.APPLICATION_JSON)
-@Path("/" + KafkaHookResource.API_VERSION)
+@Path("/hook/v1")
 public class KafkaHookResource {
-
-  static final String API_VERSION = "v1";
 
   static final Logger logger = LoggerFactory.getLogger(KafkaHookResource.class);
 
