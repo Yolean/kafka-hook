@@ -3,6 +3,8 @@ package se.yolean.kafka.hook;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 
@@ -45,7 +47,6 @@ public class CloudeventExtenderTest {
     assertEquals("some=otherwhatever", tracing.getTracestate());
   }
 
-  @Disabled // TODO there's something wrong with the mocking here
   @Test
   public void testHeaderPropagation() {
     MultivaluedMap<String, String> h = new MultivaluedMapImpl<>();
@@ -56,7 +57,6 @@ public class CloudeventExtenderTest {
     h.add("cookie", "ugh");
     h.add("x-other", "secret for which we configure exclusion");
     h.forEach((k, v) -> when(headers.getHeaderString(k)).thenReturn(String.join(",", v)));
-    assertEquals("from-envoy-maybe", headers.getHeaderString("x-request-id"));
     UriInfo uri = mock(UriInfo.class);
     CloudeventExtender extender = new CloudeventExtender();
     extender.config = mock(CloudeventConfiguration.class);
@@ -64,6 +64,8 @@ public class CloudeventExtenderTest {
     when(extender.config.getHttpExtensionPrefix()).thenReturn("h_");
     extender.limits = mock(LimitsConfiguration.class);
     IncomingWebhookExtension http = extender.getHttp(headers, uri);
+    verify(headers, times(1)).getHeaderString("x-request-id");
+    verify(headers, times(1)).getHeaderString("x-forwarded-for");
     assertThat(http.getKeys(), hasItems("h_x-request-id", "h_x-forwarded-for", "h_cookie"));
     assertEquals("from-envoy-maybe", http.getValue("h_x-request-id"));
     assertEquals("0.1.2.3456", http.getValue("h_x-forwarded-for"));

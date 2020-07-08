@@ -31,7 +31,7 @@ public class IncomingWebhookExtensionTest {
     IncomingWebhookExtension ext = new IncomingWebhookExtension("hh_", 3, "..");
     ext.withHeader("ok", "true");
     ext.withHeader("a,b", "b,c");
-    assertThat(ext.toString(), equalTo("hh_ok=tru..|hh_a,b=b,c"));
+    assertThat(ext.toString(), equalTo("hh_;3;..:hh_ok=tru..|hh_a,b=b,c"));
   }
 
   @Test
@@ -40,6 +40,23 @@ public class IncomingWebhookExtensionTest {
     ext.withHeader("OK", "true");
     ext.withHeader("Content-Type", "text/plain");
     assertThat(ext.getKeys(), hasItems("hh_ok", "hh_content-type"));
+  }
+
+  @Test
+  public void testNoCap() {
+    IncomingWebhookExtension ext = new IncomingWebhookExtension("h_", 0, null);
+    ext.withHeader("x", "y");
+    assertThat(ext.getKeys(), hasItems("h_x"));
+  }
+
+  @Test
+  public void testCapNull() {
+    IncomingWebhookExtension ext = new IncomingWebhookExtension("h_", 1, "");
+    try {
+      ext = new IncomingWebhookExtension("h_", 1, null);
+    } catch (IllegalArgumentException e) {
+      // expected
+    }
   }
 
 }
