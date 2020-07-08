@@ -12,6 +12,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.Headers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,6 +95,10 @@ public class KafkaHookResourceIntegrationTest {
     }
   }
 
+  private String value(Iterable<Header> header) {
+    return new String(header.iterator().next().value());
+  }
+
   @Disabled // need to find a way to change topic name
   @Test
   public void testProduceStringNonexistentTopic() {
@@ -128,7 +134,7 @@ public class KafkaHookResourceIntegrationTest {
         .statusCode(200);
     waitBetweenPolls();
     ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
-    assertEquals(2, records.count(), "Should have produced one message");
+    assertEquals(2, records.count(), "Should have produced two messages");
     Iterator<ConsumerRecord<String, String>> it = records.iterator();
     ConsumerRecord<String, String> record1 = it.next();
     ConsumerRecord<String, String> record2 = it.next();
@@ -144,12 +150,20 @@ public class KafkaHookResourceIntegrationTest {
     given()
       .contentType(ContentType.TEXT)
       .accept(ContentType.JSON)
+      .header("traceparent","00-...")
+      .header("tracestate", "test=...")
       .body("test1".getBytes())
       .when().post("/v1")
       .then()
         .body(containsString("\"partition\":0"))
         .body(containsString("\"offset\":" + (startOffset)))
         .statusCode(200);
+    waitBetweenPolls();
+    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+    assertEquals(1, records.count(), "Should have produced one message");
+    ConsumerRecord<String, String> record1 = records.iterator().next();
+    assertEquals("00-...", value(record1.headers().headers("ce_traceparent")));
+    assertEquals("test=...", value(record1.headers().headers("ce_tracestate")));
   }
 
 }
