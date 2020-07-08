@@ -75,11 +75,12 @@ public class KafkaHookResource {
     try {
       result = resultMaybe.get(limits.getProduceTimeout().toSeconds(), TimeUnit.SECONDS);
     } catch (InterruptedException e) {
+      err.setError(HookError.Error.INTERRUPTED);
       logger.error("Producer send interrupted", e);
       return Response.serverError().entity(err).build();
     } catch (TimeoutException e) {
-      logger.error("Producer send timeout", e);
       err.setError(HookError.Error.TIMEOUT);
+      logger.error("Producer send timeout", e);
       return Response.serverError().entity(err).build();
     } catch (ExecutionException e) {
       if (e.getCause() != null) {

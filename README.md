@@ -23,6 +23,8 @@ for Kafka-related microservices components that do one thing and do it well.
    - We could cap the length, and substring rather than ignore.
  * How do we handle large payloads?
    - TODO A configurable limit, that we set low
+ * How do we handle headers with multiple values?
+   - Use [JAX-RS](https://jax-rs.github.io/apidocs/2.1/javax/ws/rs/core/HttpHeaders.html#getHeaderString-java.lang.String-)'s concatenation (spoiler: it's commas)
 
 ## Pixy drop-in replacement, POST without dropped messages
 
@@ -53,5 +55,6 @@ Not supported:
  - Pixy's command line arguments
    - We could probably use a Quarkus [main](https://quarkus.io/guides/lifecycle#the-main-method) method
  - `X-Kafka-` HTTP headers
+   - They do get included with prefix in http headers thouhg
  - `sync` query parameter (kafka-hook is always sync=true)
  - `key` query parameter

@@ -20,6 +20,6 @@ public interface CloudeventConfiguration {
    * @return regex for header names to exclude (matching will be case insensitive)
    */
   @ConfigProperty(defaultValue = "^(cookie)$")
-  String getHttpHeadersExclude();
+  String getHeadersExclude();
 
 }

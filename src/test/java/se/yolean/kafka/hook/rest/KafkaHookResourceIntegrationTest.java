@@ -5,6 +5,7 @@ import com.salesforce.kafka.test.listeners.PlainListener;
 
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
+import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -46,20 +47,23 @@ public class KafkaHookResourceIntegrationTest {
 
   @RegisterExtension
   static final SharedKafkaTestResource kafka = new SharedKafkaTestResource()
-      .withBrokerProperty("auto.create.topics.enable", "false").withBrokers(1)
+      .withBrokerProperty("auto.create.topics.enable", "false")
+      .withBrokers(1)
       .registerListener(new PlainListener().onPorts(TEST_KAFKA_PORT));
 
   @BeforeEach
   public void kafkaOpen() throws Exception {
     NewTopic newTopic = new NewTopic("events.stream.json", 1, (short) 1);
     tp = new TopicPartition(newTopic.name(), 0);
-    Map<String, Object> adminProps = new HashMap<>(10);
+     Map<String, Object> adminProps = new HashMap<>(10);
     adminProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:" + TEST_KAFKA_PORT);
     adminClient = AdminClient.create(adminProps);
-    adminClient.listTopics();
-    CreateTopicsResult create = adminClient.createTopics(Arrays.asList(newTopic));
-    assertEquals(1, create.numPartitions(tp.topic()).get());
-    waitBetweenPolls();
+    ListTopicsResult topics = adminClient.listTopics();
+    if (!topics.names().get().contains(newTopic.name())) {
+      CreateTopicsResult create = adminClient.createTopics(Arrays.asList(newTopic));
+      assertEquals(1, create.numPartitions(tp.topic()).get());
+      waitBetweenPolls();
+    }
     Map<String, Object> props = new HashMap<>(10);
     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:" + TEST_KAFKA_PORT);
     props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
@@ -104,6 +108,7 @@ public class KafkaHookResourceIntegrationTest {
 
   @Test
   public void testProduceString() throws UnsupportedEncodingException {
+    long startOffset = consumer.endOffsets(List.of(tp)).getOrDefault(tp, 0L);
     given()
       .contentType(ContentType.TEXT)
       .accept(ContentType.JSON)
@@ -111,7 +116,7 @@ public class KafkaHookResourceIntegrationTest {
       .when().post("/v1")
       .then()
         .body(containsString("\"partition\":0"))
-        .body(containsString("\"offset\":0"))
+        .body(containsString("\"offset\":" + (startOffset)))
         .statusCode(200);
     given()
       .contentType(ContentType.TEXT)
@@ -119,7 +124,7 @@ public class KafkaHookResourceIntegrationTest {
       .body("test2".getBytes())
       .when().post("/v1")
       .then()
-        .body(containsString("\"offset\":1"))
+        .body(containsString("\"offset\":" + (startOffset + 1)))
         .statusCode(200);
     waitBetweenPolls();
     ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
@@ -135,7 +140,7 @@ public class KafkaHookResourceIntegrationTest {
 
   @Test
   public void testCloudeventsDistributedTracingExtensionWithEnvoyHeaders() {
-    // TODO figure out how to use the DistributedTracingExtension cloudevents extension, for example given headers from envoy (so we don't try to do that in our own extension)
+    long startOffset = consumer.endOffsets(List.of(tp)).getOrDefault(tp, 0L);
     given()
       .contentType(ContentType.TEXT)
       .accept(ContentType.JSON)
@@ -143,7 +148,7 @@ public class KafkaHookResourceIntegrationTest {
       .when().post("/v1")
       .then()
         .body(containsString("\"partition\":0"))
-        .body(containsString("\"offset\":0"))
+        .body(containsString("\"offset\":" + (startOffset)))
         .statusCode(200);
   }
 
