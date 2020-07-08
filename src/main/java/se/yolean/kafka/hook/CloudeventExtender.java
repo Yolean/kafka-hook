@@ -36,11 +36,14 @@ public class CloudeventExtender {
   }
 
   public IncomingWebhookExtension getHttp(HttpHeaders headers, UriInfo uri) {
-    IncomingWebhookExtension webhook = new IncomingWebhookExtension();
+    IncomingWebhookExtension webhook = new IncomingWebhookExtension(
+      config.getHttpExtensionPrefix(),
+      limits.getHeaderValueLengthCap(),
+      limits.getHeaderValueEllipsis());
     Set<String> keys = headers.getRequestHeaders().keySet();
     for (String key : keys) {
       if (!getHeadersExcludeRegex().matcher(key).matches()) {
-        webhook.withHeader(key.toLowerCase(), headers.getHeaderString(key));
+        webhook.withHeader(key, headers.getHeaderString(key));
       }
     }
     return webhook;

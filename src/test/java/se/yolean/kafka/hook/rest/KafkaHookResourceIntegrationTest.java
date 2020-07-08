@@ -13,9 +13,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.header.Header;
-import org.apache.kafka.common.header.Headers;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -25,8 +23,11 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.UnsupportedEncodingException;
@@ -42,10 +43,11 @@ public class KafkaHookResourceIntegrationTest {
 
   public static final int TEST_KAFKA_PORT = 19092;
 
-  private KafkaConsumer<String, String> consumer = null;
   private AdminClient adminClient = null;
+  private KafkaConsumer<String, String> consumer = null;
   private TopicPartition tp = null;
   private Duration pollTime = Duration.ofMillis(100);
+  private long startOffset = 0;
 
   @RegisterExtension
   static final SharedKafkaTestResource kafka = new SharedKafkaTestResource()
@@ -73,8 +75,9 @@ public class KafkaHookResourceIntegrationTest {
     props.put(ConsumerConfig.GROUP_ID_CONFIG, this.getClass().getName() + System.currentTimeMillis());
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
     consumer = new KafkaConsumer<>(props);
+    startOffset = consumer.endOffsets(List.of(tp)).getOrDefault(tp, 0L);
     consumer.assign(Arrays.asList(tp));
-    consumer.seek(tp, 0);
+    consumer.seek(tp, startOffset);
     assertEquals(0, consumer.poll(Duration.ofMillis(1)).count());
     consumer.commitSync();
   }
@@ -95,8 +98,12 @@ public class KafkaHookResourceIntegrationTest {
     }
   }
 
-  private String value(Iterable<Header> header) {
-    return new String(header.iterator().next().value());
+  private Map<String,String> headers(ConsumerRecord<?, ?> record) {
+    Map<String,String> h = new HashMap<>();
+    for (Header header : record.headers()) {
+      h.put(header.key(), new String(header.value()));
+    }
+    return h;
   }
 
   @Disabled // need to find a way to change topic name
@@ -114,7 +121,6 @@ public class KafkaHookResourceIntegrationTest {
 
   @Test
   public void testProduceString() throws UnsupportedEncodingException {
-    long startOffset = consumer.endOffsets(List.of(tp)).getOrDefault(tp, 0L);
     given()
       .contentType(ContentType.TEXT)
       .accept(ContentType.JSON)
@@ -127,6 +133,8 @@ public class KafkaHookResourceIntegrationTest {
     given()
       .contentType(ContentType.TEXT)
       .accept(ContentType.JSON)
+      .header("x-forwarded-for", "127.0.0.1")
+      .header("cookie", "long string with auth stuff")
       .body("test2".getBytes())
       .when().post("/v1")
       .then()
@@ -142,11 +150,13 @@ public class KafkaHookResourceIntegrationTest {
     assertEquals("test1", record1.value());
     assertEquals("test2", record2.value());
     consumer.commitSync();
+    assertThat(headers(record2).keySet(), hasItems("ce_xyhttp_x-forwarded-for"));
+    assertEquals("127.0.0.1", headers(record2).get("ce_xyhttp_x-forwarded-for"));
+    assertThat(headers(record2).keySet(), not(hasItems("ce_xyhttp_cookie")));
   }
 
   @Test
   public void testCloudeventsDistributedTracingExtensionWithEnvoyHeaders() {
-    long startOffset = consumer.endOffsets(List.of(tp)).getOrDefault(tp, 0L);
     given()
       .contentType(ContentType.TEXT)
       .accept(ContentType.JSON)
@@ -162,8 +172,8 @@ public class KafkaHookResourceIntegrationTest {
     ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
     assertEquals(1, records.count(), "Should have produced one message");
     ConsumerRecord<String, String> record1 = records.iterator().next();
-    assertEquals("00-...", value(record1.headers().headers("ce_traceparent")));
-    assertEquals("test=...", value(record1.headers().headers("ce_tracestate")));
+    assertEquals("00-...", headers(record1).get("ce_traceparent"));
+    assertEquals("test=...", headers(record1).get("ce_tracestate"));
   }
 
 }

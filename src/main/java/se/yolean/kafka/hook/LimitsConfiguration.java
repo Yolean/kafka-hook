@@ -19,7 +19,7 @@ public interface LimitsConfiguration {
   Integer getHeaderValueLengthCap();
 
   @ConfigProperty(defaultValue = "...")
-  Integer getHeaderValueEllipsis();
+  String getHeaderValueEllipsis();
 
   @ConfigProperty(defaultValue = "65536")
   Integer getPayloadBytesCap();
