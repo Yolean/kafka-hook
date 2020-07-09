@@ -37,7 +37,7 @@ RUN test "$build" = "native-image" || mvn --batch-mode $build
 
 RUN test "$build" != "native-image" || ( \
   cd target/*-native-image-source-jar && \
-  native-image $(curl -sL https://github.com/solsson/quarkus-graalvm-builds/raw/302596d2dc005a7c4b84e291d4c459772070a553/rest-json-quickstart.txt | sed 's/__APP__/kafka-hook-1.0-SNAPSHOT/g') && \
+  native-image $(curl -sL https://github.com/solsson/quarkus-graalvm-builds/raw/593699ab9795414fd8b992922dd4d9611c3184bf/rest-json-quickstart.txt | sed 's/__APP__/kafka-hook-1.0-SNAPSHOT/g') && \
   mv *-runner ../ \
 )
 
