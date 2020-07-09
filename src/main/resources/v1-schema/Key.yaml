@@ -3,3 +3,5 @@ additionalProperties: false
 properties:
   path:
     type: string
+  id:
+    type: string

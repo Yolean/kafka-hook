@@ -46,13 +46,17 @@ public class KafkaHookResource {
   @Inject LimitsConfiguration limits;
   @Inject CloudeventExtender extensions;
 
+  URI getSource(String subpath) {
+    return URI.create(config.getSourceHost() + "/hook/v1/" + subpath);
+  }
+
   @POST
   public Response produce(@Context HttpHeaders headers, @Context UriInfo uri, InputStream payload) throws IOException {
     return produce(headers, uri, "", payload);
   }
 
   @POST
-  @Path("{anypath}")
+  @Path("/{anypath}")
   public Response produce(@Context HttpHeaders headers, @Context UriInfo uri, @PathParam("anypath") String anypath, InputStream payload)
       // if we fail to read the payload, which would be very strange
       throws IOException {
@@ -63,12 +67,14 @@ public class KafkaHookResource {
     CloudEvent message = CloudEventBuilder.v1()
         .withId(id)
         .withType(config.getTypeFixed())
-        .withSource(URI.create("http://kafka-hook/hook/v1" + anypath))
+        .withSource(getSource(anypath))
         .withExtension(extensions.getTracing(headers))
         .withExtension(extensions.getHttp(headers, uri))
         .withData(data)
         .build();
     Key key = new Key();
+    key.setId(id);
+    key.setPath(anypath);
     Future<RecordMetadata> resultMaybe = producer.send(key, message);
     RecordMetadata result;
     try {

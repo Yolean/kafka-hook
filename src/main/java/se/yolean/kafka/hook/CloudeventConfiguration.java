@@ -9,6 +9,8 @@ public interface CloudeventConfiguration {
 
   String getTypeFixed();
 
+  String getSourceHost();
+
   @ConfigProperty(defaultValue = "traceparent")
   String getTraceparentHeader();
   
