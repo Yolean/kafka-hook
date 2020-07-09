@@ -19,7 +19,7 @@ RUN set -e; \
 COPY . .
 
 ENTRYPOINT [ "mvn", "quarkus:dev" ]
-CMD [ "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=8090" ]
+CMD [ "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=8080" ]
 
 # The jar and the lib folder is required for the jvm target even when the native target is the end result
 # Also we want to run the tests here, regardless of build target
@@ -48,10 +48,10 @@ WORKDIR /app
 COPY --from=dev /workspace/target/lib ./lib
 COPY --from=dev /workspace/target/*-runner.jar ./app.jar
 
-EXPOSE 8090
+EXPOSE 8080
 ENTRYPOINT [ "java", \
   "-Dquarkus.http.host=0.0.0.0", \
-  "-Dquarkus.http.port=8090", \
+  "-Dquarkus.http.port=8080", \
   "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", \
   "-cp", "./lib/*", \
   "-jar", "./app.jar" ]
