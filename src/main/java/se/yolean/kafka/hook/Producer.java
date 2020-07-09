@@ -39,7 +39,7 @@ public class Producer {
   }
 
   void onStop(@Observes ShutdownEvent ev) {    
-    producer.close(ProducerConfigurationTemp.PRODUCER_CLOSE_TIMEOUT);
+    producer.close(ProducerConfiguration.PRODUCER_CLOSE_TIMEOUT);
   }
 
   public Future<RecordMetadata> send(Key key, CloudEvent message) {

@@ -11,8 +11,6 @@ import org.apache.kafka.clients.producer.ProducerConfig;
  * - https://github.com/quarkusio/quarkus/pull/9771
  */
 public interface ProducerConfigurationTemp {
-  
-  /*@ConfigIgnore*/ static Duration PRODUCER_CLOSE_TIMEOUT = Duration.ofSeconds(10);
 
   /*@ConfigIgnore*/ static Map<String,Object> toProps(ProducerConfiguration c) {
     Map<String, Object> props = new HashMap<>(10);
