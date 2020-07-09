@@ -96,6 +96,7 @@
           <targetPackage>se.yolean.kafka.hooks.v1.types</targetPackage>
           <sourceType>yamlschema</sourceType>
           <generateBuilders>false</generateBuilders>
+          <customAnnotator>io.radanalytics.operator.annotator.RegisterForReflectionAnnotator</customAnnotator>
         </configuration>
         <executions>
           <execution>
@@ -104,6 +105,13 @@
             </goals>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>io.radanalytics</groupId>
+            <artifactId>abstract-operator-annotator</artifactId>
+            <version>0.6.7</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>io.quarkus</groupId>
