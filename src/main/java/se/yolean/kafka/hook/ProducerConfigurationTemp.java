@@ -6,13 +6,18 @@ import java.util.Map;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 
+import io.quarkus.arc.config.ConfigIgnore;
+
 /**
  * Can be moved into ProducerConfiguration with Quarkus 1.6
  * - https://github.com/quarkusio/quarkus/pull/9771
  */
 public interface ProducerConfigurationTemp {
 
-  /*@ConfigIgnore*/ static Map<String,Object> toProps(ProducerConfiguration c) {
+  @ConfigIgnore
+  static final Duration PRODUCER_CLOSE_TIMEOUT = Duration.ofSeconds(10);
+
+  static Map<String,Object> toProps(ProducerConfiguration c) {
     Map<String, Object> props = new HashMap<>(10);
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, c.getBootstrapServer());
     props.put(ProducerConfig.ACKS_CONFIG, c.getAcks());

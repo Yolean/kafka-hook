@@ -16,9 +16,6 @@ import se.yolean.kafka.hooks.v1.types.Key;
 @ConfigProperties(prefix = "kafka")
 public interface ProducerConfiguration {
 
-  @ConfigIgnore
-  static final Duration PRODUCER_CLOSE_TIMEOUT = Duration.ofSeconds(10);
-
   @ConfigProperty(name = "topic")
   String getTopic();
 
