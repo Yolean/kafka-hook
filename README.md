@@ -1,8 +1,9 @@
 # Kafka hook
 
-An incoming webhook endpoint that tries to capture all messages, with context.
+An incoming webhook endpoint that tries tries to never reject a message.
 The sequel to [kafka-keyvalue](https://github.com/Yolean/kafka-keyvalue) in our need
 for Kafka-related microservices components that do one thing and do it well.
+To aid both happy and not-so-happy paths for integrations it captures most attributes of the incoming request alongside the payload.
 
 ## Decisions taken along the way of exploring this concept
 

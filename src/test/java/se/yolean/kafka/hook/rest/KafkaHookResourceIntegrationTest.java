@@ -176,4 +176,24 @@ public class KafkaHookResourceIntegrationTest {
     assertEquals("test=...", headers(record1).get("ce_tracestate"));
   }
 
+  @Test
+  public void testPayloadMaxLengthExceeded() {
+    // it returns status 40X
+    // data is empty
+    // there's a header that stores the reason for data being empty
+    // maybe a rejections extension?
+  }
+
+  @Test
+  public void testContentTypeJson() {
+    // it returns status 40X if the payload isn't valid json
+    // so that the sending party can retry
+    // it stores the payload anyway
+    // it has a header that documents the rejection, so that a consuming party can skip the message
+  }
+
+  public void testContentTypePlusJson() {
+    // it understands things like "application/whatever+json; Something charset"
+  }
+
 }
