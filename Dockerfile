@@ -1,4 +1,4 @@
-FROM solsson/kafka:graalvm@sha256:1664114a7d2526e6bfc6ec31516c2a362ad4879b9651042614e72755978d5b32 \
+FROM solsson/kafka:graalvm@sha256:28505c768b7f8b44168b9df5bc27dc4735d1be75ea5a12eb94c34af2d661e66a \
   as dev
 
 WORKDIR /workspace
@@ -41,7 +41,7 @@ RUN test "$build" != "native-image" || ( \
   mv *-runner ../ \
 )
 
-FROM solsson/kafka:2.5.0-jre@sha256:5d90c12f3ebae522daf35ed5f0bdcb845ee250b8f10da9c56f42da60800f975e \
+FROM solsson/kafka:jre@sha256:9374540e6643ac577056e900872793cc4a96687025e3b492e93ad8d10c8e429b \
   as jvm
 
 WORKDIR /app
