@@ -46,8 +46,8 @@ public class KafkaHookResource {
   @Inject LimitsConfiguration limits;
   @Inject CloudeventExtender extensions;
 
-  URI getSource(String subpath) {
-    return URI.create(config.getSourceHost() + "/hook/v1/" + subpath);
+  URI getSource(UriInfo uri) {
+    return URI.create(config.getSourceHost() + "/hook/v1/");
   }
 
   @POST
@@ -56,25 +56,26 @@ public class KafkaHookResource {
   }
 
   @POST
-  @Path("/{anypath}")
-  public Response produce(@Context HttpHeaders headers, @Context UriInfo uri, @PathParam("anypath") String anypath, InputStream payload)
+  @Path("/{type}")
+  public Response produce(@Context HttpHeaders headers, @Context UriInfo uri, @PathParam("type") String type, InputStream payload)
       // if we fail to read the payload, which would be very strange
       throws IOException {
     final String id = UUID.randomUUID().toString();
+    final String eventtype = config.getTypePrefix() + type;
     HookError err = new HookError();
     byte[] data = payload.readAllBytes();
     // TODO handle too large payloads
     CloudEvent message = CloudEventBuilder.v1()
         .withId(id)
-        .withType(config.getTypeFixed())
-        .withSource(getSource(anypath))
+        .withType(eventtype)
+        .withSource(getSource(uri))
         .withExtension(extensions.getTracing(headers))
         .withExtension(extensions.getHttp(headers, uri))
         .withData(data)
         .build();
     HookMessageKey key = new HookMessageKey();
     key.setId(id);
-    key.setPath(anypath);
+    key.setType(type);
     Future<RecordMetadata> resultMaybe = producer.send(key, message);
     RecordMetadata result;
     try {

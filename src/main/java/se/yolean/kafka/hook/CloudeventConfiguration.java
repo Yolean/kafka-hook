@@ -7,13 +7,13 @@ import io.quarkus.arc.config.ConfigProperties;
 @ConfigProperties
 public interface CloudeventConfiguration {
 
-  String getTypeFixed();
+  String getTypePrefix();
 
   String getSourceHost();
 
   @ConfigProperty(defaultValue = "traceparent")
   String getTraceparentHeader();
-  
+
   @ConfigProperty(defaultValue = "tracestate")
   String getTracestateHeader();
 

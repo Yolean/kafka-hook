@@ -136,7 +136,7 @@ public class KafkaHookResourceIntegrationTest {
       .header("x-forwarded-for", "127.0.0.1")
       .header("cookie", "long string with auth stuff")
       .body("test2".getBytes())
-      .when().post("/hook/v1")
+      .when().post("/hook/v1/mytype")
       .then()
         .body(containsString("\"offset\":" + (startOffset + 1)))
         .statusCode(200);
@@ -153,6 +153,11 @@ public class KafkaHookResourceIntegrationTest {
     assertThat(headers(record2).keySet(), hasItems("ce_xyhttp_x-forwarded-for"));
     assertEquals("127.0.0.1", headers(record2).get("ce_xyhttp_x-forwarded-for"));
     assertThat(headers(record2).keySet(), not(hasItems("ce_xyhttp_cookie")));
+    // types from default config
+    assertThat(headers(record1).keySet(), hasItems("ce_type"));
+    assertEquals("github.com/Yolean/kafka-hook/", headers(record1).get("ce_type"));
+    assertThat(headers(record2).keySet(), hasItems("ce_type"));
+    assertEquals("github.com/Yolean/kafka-hook/mytype", headers(record2).get("ce_type"));
   }
 
   @Test

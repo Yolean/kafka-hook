@@ -1,7 +1,7 @@
 type: object
 additionalProperties: false
 properties:
-  path:
+  type:
     type: string
   id:
     type: string
