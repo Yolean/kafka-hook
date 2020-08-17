@@ -17,7 +17,7 @@ import io.cloudevents.CloudEvent;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
-import se.yolean.kafka.hooks.v1.types.Key;
+import se.yolean.kafka.hooks.v1.types.HookMessageKey;
 
 /**
  * This isn't meant to be an abstraction (we try to avoid Kafka client abstractions)
@@ -31,19 +31,19 @@ public class Producer {
 
   @Inject ProducerConfiguration config;
 
-  KafkaProducer<Key, CloudEvent> producer = null;
+  KafkaProducer<HookMessageKey, CloudEvent> producer = null;
 
-  void onStart(@Observes StartupEvent ev) {               
+  void onStart(@Observes StartupEvent ev) {
     Map<String,Object> props = ProducerConfigurationTemp.toProps(config);
     producer = new KafkaProducer<>(props);
   }
 
-  void onStop(@Observes ShutdownEvent ev) {    
+  void onStop(@Observes ShutdownEvent ev) {
     producer.close(ProducerConfigurationTemp.PRODUCER_CLOSE_TIMEOUT);
   }
 
-  public Future<RecordMetadata> send(Key key, CloudEvent message) {
-    return producer.send(new ProducerRecord<Key,CloudEvent>(config.getTopic(), key, message));
+  public Future<RecordMetadata> send(HookMessageKey key, CloudEvent message) {
+    return producer.send(new ProducerRecord<HookMessageKey,CloudEvent>(config.getTopic(), key, message));
   }
 
 }

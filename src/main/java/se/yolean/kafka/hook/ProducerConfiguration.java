@@ -11,7 +11,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.cloudevents.CloudEvent;
 import io.quarkus.arc.config.ConfigIgnore;
 import io.quarkus.arc.config.ConfigProperties;
-import se.yolean.kafka.hooks.v1.types.Key;
+import se.yolean.kafka.hooks.v1.types.HookMessageKey;
 
 @ConfigProperties(prefix = "kafka")
 public interface ProducerConfiguration {
@@ -29,7 +29,7 @@ public interface ProducerConfiguration {
   Boolean getEnableIdempotence();
 
   @ConfigProperty(name = ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG)
-  Class<? extends Serializer<Key>> getKeySerializer();
+  Class<? extends Serializer<HookMessageKey>> getKeySerializer();
 
   @ConfigProperty(name = ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG)
   Class<? extends Serializer<CloudEvent>> getVallueSerializer();

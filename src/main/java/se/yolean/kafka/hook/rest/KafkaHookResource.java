@@ -32,8 +32,8 @@ import se.yolean.kafka.hook.CloudeventExtender;
 import se.yolean.kafka.hook.Producer;
 import se.yolean.kafka.hook.LimitsConfiguration;
 import se.yolean.kafka.hooks.v1.types.HookError;
-import se.yolean.kafka.hooks.v1.types.Key;
-import se.yolean.kafka.hooks.v1.types.Receipt;
+import se.yolean.kafka.hooks.v1.types.HookMessageKey;
+import se.yolean.kafka.hooks.v1.types.HookReceipt;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/hook/v1")
@@ -72,7 +72,7 @@ public class KafkaHookResource {
         .withExtension(extensions.getHttp(headers, uri))
         .withData(data)
         .build();
-    Key key = new Key();
+    HookMessageKey key = new HookMessageKey();
     key.setId(id);
     key.setPath(anypath);
     Future<RecordMetadata> resultMaybe = producer.send(key, message);
@@ -99,7 +99,7 @@ public class KafkaHookResource {
       logger.error("Producer send failed", e);
       return Response.serverError().entity(err).build();
     }
-    Receipt receipt = new Receipt();
+    HookReceipt receipt = new HookReceipt();
     receipt.setId(id);
     receipt.setPartition(result.partition());
     receipt.setOffset(result.offset());
