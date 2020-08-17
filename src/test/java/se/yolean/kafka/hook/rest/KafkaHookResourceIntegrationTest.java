@@ -57,7 +57,7 @@ public class KafkaHookResourceIntegrationTest {
 
   @BeforeEach
   public void kafkaOpen() throws Exception {
-    NewTopic newTopic = new NewTopic("events.stream.json", 1, (short) 1);
+    NewTopic newTopic = new NewTopic("events.notvalidated.stream", 1, (short) 1);
     tp = new TopicPartition(newTopic.name(), 0);
      Map<String, Object> adminProps = new HashMap<>(10);
     adminProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:" + TEST_KAFKA_PORT);
