@@ -1,9 +1,9 @@
-FROM solsson/kafka:graalvm@sha256:28505c768b7f8b44168b9df5bc27dc4735d1be75ea5a12eb94c34af2d661e66a \
+FROM yolean/builder-quarkus:2171b3f888b2b6fcbdbd36d91658f90611acf606@sha256:04b41a280c45e8081cb86ccdbe2ab4296e023382e05557e7086feb81a477cb8e \
   as dev
 
-WORKDIR /workspace
 COPY pom.xml .
 
+# This kind of caching step should be moved to a script in yolean/builder-qarkus
 RUN set -e; \
   export QUARKUS_VERSION=$(cat pom.xml | grep '<quarkus.platform.version>' | sed 's/.*>\(.*\)<.*/\1/'); \
   echo "Quarkus version: $QUARKUS_VERSION"; \
@@ -56,7 +56,7 @@ ENTRYPOINT [ "java", \
   "-cp", "./lib/*", \
   "-jar", "./app.jar" ]
 
-FROM gcr.io/distroless/base-debian10:nonroot@sha256:78f2372169e8d9c028da3856bce864749f2bb4bbe39c69c8960a6e40498f8a88
+FROM gcr.io/distroless/base-debian10:nonroot@sha256:f4a1b1083db512748a305a32ede1d517336c8b5bead1c06c6eac2d40dcaab6ad
 
 COPY --from=dev \
   /lib/x86_64-linux-gnu/libz.so.* \
