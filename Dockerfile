@@ -1,20 +1,8 @@
-FROM yolean/builder-quarkus:2171b3f888b2b6fcbdbd36d91658f90611acf606@sha256:04b41a280c45e8081cb86ccdbe2ab4296e023382e05557e7086feb81a477cb8e \
+FROM yolean/builder-quarkus:3a9207474eea4e269b2dc214fa7d4d7c6a3b2481@sha256:21264cb6c62944f2ddc38818b0907cc0c854fe5c43004c3d4bceb188a86ebcce \
   as dev
 
 COPY pom.xml .
-
-# This kind of caching step should be moved to a script in yolean/builder-qarkus
-RUN set -e; \
-  export QUARKUS_VERSION=$(cat pom.xml | grep '<quarkus.platform.version>' | sed 's/.*>\(.*\)<.*/\1/'); \
-  echo "Quarkus version: $QUARKUS_VERSION"; \
-  mkdir -p src/test/java/org; \
-  echo 'package org; public class T { @org.junit.jupiter.api.Test public void t() { } }' > src/test/java/org/T.java; \
-  mkdir -p src/main/resources/v1-schema; \
-  echo 'type: object' > src/main/resources/v1-schema/Dummy.yaml; \
-  mvn --batch-mode package; \
-  mvn --batch-mode package -Pnative -Dquarkus.native.additional-build-args=--dry-run \
-  || echo "= BUILD ERROR IS OK: Caching dependencies."; \
-  rm -r src
+RUN y-build-quarkus-cache
 
 COPY . .
 
