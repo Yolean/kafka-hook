@@ -13,7 +13,7 @@ import io.quarkus.arc.config.ConfigIgnore;
 import io.quarkus.arc.config.ConfigProperties;
 import se.yolean.kafka.hooks.v1.types.HookMessageKey;
 
-@ConfigProperties(prefix = "kafka")
+@ConfigProperties(prefix = "mp.messaging.incoming.hook")
 public interface ProducerConfiguration {
 
   @ConfigProperty(name = "topic")
