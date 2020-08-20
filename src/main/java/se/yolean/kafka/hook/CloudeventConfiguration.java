@@ -17,7 +17,7 @@ public interface CloudeventConfiguration {
   @ConfigProperty(defaultValue = "tracestate")
   String getTracestateHeader();
 
-  @ConfigProperty(defaultValue = "xyhttp_")
+  @ConfigProperty(defaultValue = "hook_")
   String getHttpExtensionPrefix();
 
   /**

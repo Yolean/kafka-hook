@@ -12,10 +12,10 @@ To aid both happy and not-so-happy paths for integrations it captures most attri
    - Or `kafkacat -f '%k: %h %s\n' etc.
    - Thus we need to flatten http headers fields into individual cloudevents extension keys
  * How do we, as an [extension](), prefix http headers?
-   - ... and the prefix will be prefixed by `ce_` 
+   - ... and the prefix will be prefixed by `ce_`
    - We're probably predating (and/or obstructing) real extensions for this kind of thing, so let's not use `http` or `header`
    - Let's use something reasonable searchable:
-     `xyhttp_` because it's more readable than x-yolean- or yolean.se/whatever.
+     `hook_` because it's more readable than x-yolean- or yolean.se/whatever.
  * With a single topic name, configured at start, we can produce more reliably that with dynamic topic selection
    - TODO we could, and probably should, validate topic existence on start
  * How do we handle long header values?
@@ -39,7 +39,7 @@ To increase the confusion in such cases, HTTP responses contain no clues.
 
 Kafka-hook is designed to do anything it can to forward the request to kafka,
 and if it fails anyway it should be expected to log stack traces.
-Also it tries to send an 
+Also it tries to send an
 
 Supported:
  - POST /topic/{ignored}/messages
