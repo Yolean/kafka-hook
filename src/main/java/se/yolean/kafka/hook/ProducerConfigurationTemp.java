@@ -23,7 +23,7 @@ public interface ProducerConfigurationTemp {
     props.put(ProducerConfig.ACKS_CONFIG, c.getAcks());
     props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, c.getEnableIdempotence());
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, c.getKeySerializer());
-    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, c.getVallueSerializer());
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, c.getValueSerializer());
     if (c.getRequestTimeoutMs().isPresent()) {
       props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, c.getRequestTimeoutMs().orElseThrow());
     }

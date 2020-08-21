@@ -1,7 +1,5 @@
 package se.yolean.kafka.hook;
 
-import java.time.Duration;
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -9,7 +7,6 @@ import org.apache.kafka.common.serialization.Serializer;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.cloudevents.CloudEvent;
-import io.quarkus.arc.config.ConfigIgnore;
 import io.quarkus.arc.config.ConfigProperties;
 import se.yolean.kafka.hooks.v1.types.HookMessageKey;
 
@@ -32,7 +29,7 @@ public interface ProducerConfiguration {
   Class<? extends Serializer<HookMessageKey>> getKeySerializer();
 
   @ConfigProperty(name = ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG)
-  Class<? extends Serializer<CloudEvent>> getVallueSerializer();
+  Class<? extends Serializer<CloudEvent>> getValueSerializer();
 
   @ConfigProperty(name = ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG)
   Optional<Integer> getRequestTimeoutMs();
