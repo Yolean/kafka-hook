@@ -1,4 +1,4 @@
-package se.yolean.kafka.hook;
+package se.yolean.kafka;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -6,18 +6,11 @@ import java.util.Map;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 
-import io.quarkus.arc.config.ConfigIgnore;
+public abstract class KafkaProps {
 
-/**
- * Can be moved into ProducerConfiguration with Quarkus 1.6
- * - https://github.com/quarkusio/quarkus/pull/9771
- */
-public interface ProducerConfigurationTemp {
+  public static final Duration PRODUCER_CLOSE_TIMEOUT = Duration.ofSeconds(10);
 
-  @ConfigIgnore
-  static final Duration PRODUCER_CLOSE_TIMEOUT = Duration.ofSeconds(10);
-
-  static Map<String,Object> toProps(ProducerConfiguration c) {
+  static public Map<String,Object> fromQuarkusOutgoingConfig(KafkaQuarkusProducerConfig c) {
     Map<String, Object> props = new HashMap<>(10);
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, c.getBootstrapServer());
     props.put(ProducerConfig.ACKS_CONFIG, c.getAcks());

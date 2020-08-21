@@ -17,6 +17,7 @@ import io.cloudevents.CloudEvent;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
+import se.yolean.kafka.KafkaProps;
 import se.yolean.kafka.hooks.v1.types.HookMessageKey;
 
 /**
@@ -34,12 +35,12 @@ public class Producer {
   KafkaProducer<HookMessageKey, CloudEvent> producer = null;
 
   void onStart(@Observes StartupEvent ev) {
-    Map<String,Object> props = ProducerConfigurationTemp.toProps(config);
+    Map<String,Object> props = KafkaProps.fromQuarkusOutgoingConfig(config);
     producer = new KafkaProducer<>(props);
   }
 
   void onStop(@Observes ShutdownEvent ev) {
-    producer.close(ProducerConfigurationTemp.PRODUCER_CLOSE_TIMEOUT);
+    producer.close(KafkaProps.PRODUCER_CLOSE_TIMEOUT);
   }
 
   public Future<RecordMetadata> send(HookMessageKey key, CloudEvent message) {
