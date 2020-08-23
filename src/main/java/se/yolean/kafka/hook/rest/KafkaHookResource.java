@@ -31,9 +31,9 @@ import se.yolean.kafka.hook.CloudeventConfiguration;
 import se.yolean.kafka.hook.CloudeventExtender;
 import se.yolean.kafka.hook.Producer;
 import se.yolean.kafka.hook.LimitsConfiguration;
-import se.yolean.kafka.hooks.v1.types.HookError;
-import se.yolean.kafka.hooks.v1.types.HookMessageKey;
-import se.yolean.kafka.hooks.v1.types.HookReceipt;
+import se.yolean.kafka.hook.types.v1.HookError;
+import se.yolean.kafka.hook.types.v1.HookMessageKey;
+import se.yolean.kafka.hook.types.v1.HookReceipt;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/hook/v1")

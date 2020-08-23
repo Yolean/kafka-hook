@@ -93,7 +93,7 @@
         <version>1.0.2</version>
         <configuration>
           <sourceDirectory>${basedir}/src/main/jsonschema</sourceDirectory>
-          <targetPackage>se.yolean.kafka.hooks.v1.types</targetPackage>
+          <targetPackage>se.yolean.kafka.hook.types.v1</targetPackage>
           <sourceType>yamlschema</sourceType>
           <generateBuilders>false</generateBuilders>
           <customAnnotator>io.radanalytics.operator.annotator.RegisterForReflectionAnnotator</customAnnotator>

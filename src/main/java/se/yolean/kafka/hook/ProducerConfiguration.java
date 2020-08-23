@@ -9,7 +9,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.cloudevents.CloudEvent;
 import io.quarkus.arc.config.ConfigProperties;
 import se.yolean.kafka.KafkaQuarkusProducerConfig;
-import se.yolean.kafka.hooks.v1.types.HookMessageKey;
+import se.yolean.kafka.hook.types.v1.HookMessageKey;
 
 @ConfigProperties(prefix = "outgoing.hook")
 public interface ProducerConfiguration extends KafkaQuarkusProducerConfig {

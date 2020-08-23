@@ -18,7 +18,7 @@ import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import se.yolean.kafka.KafkaProps;
-import se.yolean.kafka.hooks.v1.types.HookMessageKey;
+import se.yolean.kafka.hook.types.v1.HookMessageKey;
 
 /**
  * This isn't meant to be an abstraction (we try to avoid Kafka client abstractions)
