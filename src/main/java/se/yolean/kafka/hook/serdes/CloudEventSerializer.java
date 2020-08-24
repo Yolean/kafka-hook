@@ -1,4 +1,4 @@
-package se.yolean.kafka.hook.serializers;
+package se.yolean.kafka.hook.serdes;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

@@ -1,7 +1,5 @@
 package se.yolean.kafka.hook;
 
-import java.util.Optional;
-
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serializer;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
