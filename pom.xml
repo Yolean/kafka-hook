@@ -16,6 +16,7 @@
     <repository>
       <id>github</id>
       <name>GitHub Packages</name>
+      <!-- NOTE "public" isn't public: https://github.community/t/download-from-github-package-registry-without-authentication/14407/30 -->
       <url>https://maven.pkg.github.com/Yolean/kafka-hook</url>
     </repository>
   </distributionManagement>
