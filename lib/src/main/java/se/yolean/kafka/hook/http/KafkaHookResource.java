@@ -1,4 +1,4 @@
-package se.yolean.kafka.hook.rest;
+package se.yolean.kafka.hook.http;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,11 +9,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -29,17 +29,16 @@ import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import se.yolean.kafka.hook.CloudeventConfiguration;
 import se.yolean.kafka.hook.CloudeventExtender;
-import se.yolean.kafka.hook.Producer;
 import se.yolean.kafka.hook.LimitsConfiguration;
+import se.yolean.kafka.hook.Producer;
 import se.yolean.kafka.hook.types.v1.HookError;
 import se.yolean.kafka.hook.types.v1.HookMessageKey;
 import se.yolean.kafka.hook.types.v1.HookReceipt;
 
-@Produces(MediaType.APPLICATION_JSON)
-@Path("/hook/v1")
+@ApplicationScoped
 public class KafkaHookResource {
 
-  static final Logger logger = LoggerFactory.getLogger(KafkaHookResource.class);
+  private static final Logger logger = LoggerFactory.getLogger(KafkaHookResource.class);
 
   @Inject Producer producer;
   @Inject CloudeventConfiguration config;
@@ -50,14 +49,20 @@ public class KafkaHookResource {
     return URI.create(config.getSourceHost() + "/hook/v1/");
   }
 
+  /*
   @POST
   public Response produce(@Context HttpHeaders headers, @Context UriInfo uri, InputStream payload) throws IOException {
+  */
+  public Response produce(HttpHeaders headers, UriInfo uri, InputStream payload) throws IOException {
     return produce(headers, uri, "", payload);
   }
 
+  /*
   @POST
   @Path("/{type}")
   public Response produce(@Context HttpHeaders headers, @Context UriInfo uri, @PathParam("type") String type, InputStream payload)
+  */
+  public Response produce(HttpHeaders headers, UriInfo uri, String type, InputStream payload)
       // if we fail to read the payload, which would be very strange
       throws IOException {
     final String id = UUID.randomUUID().toString();
