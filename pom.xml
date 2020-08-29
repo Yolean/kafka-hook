@@ -40,6 +40,7 @@
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
         <version>${quarkus-plugin.version}</version>
+        <!-- An attempt to support mvn quarkus:dev as in https://stackoverflow.com/questions/59075116/maven-multi-module-project-with-quarkus-in-dev-mode -->
         <configuration>
           <skip>true</skip>
         </configuration>
