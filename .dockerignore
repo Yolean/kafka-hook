@@ -1,3 +1,6 @@
 *
 !pom.xml
-!src
+!lib/pom.xml
+!lib/src
+!rest/pom.xml
+!rest/src
