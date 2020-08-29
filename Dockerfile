@@ -1,8 +1,12 @@
-FROM yolean/builder-quarkus:3a9207474eea4e269b2dc214fa7d4d7c6a3b2481@sha256:21264cb6c62944f2ddc38818b0907cc0c854fe5c43004c3d4bceb188a86ebcce \
+FROM yolean/builder-quarkus:dc1392b4cdb17073343b113213cba34efef9aabf@sha256:56822ca3bc46c41308966e59a045783d557d352db8a31ec60c4ff3229669de59 \
   as dev
 
-COPY pom.xml .
-RUN y-build-quarkus-cache
+COPY --chown=nonroot:nogroup pom.xml .
+COPY --chown=nonroot:nogroup lib/pom.xml lib/
+COPY --chown=nonroot:nogroup rest/pom.xml rest/
+
+RUN mkdir -p rest/target/
+RUN cd lib && y-build-quarkus-cache
 
 COPY . .
 
@@ -24,8 +28,8 @@ ARG build="native-image"
 RUN test "$build" = "native-image" || mvn --batch-mode $build
 
 RUN test "$build" != "native-image" || ( \
-  cd target/*-native-image-source-jar && \
-  native-image $(curl -sL https://github.com/solsson/quarkus-graalvm-builds/raw/593699ab9795414fd8b992922dd4d9611c3184bf/rest-json-quickstart.txt | sed 's/__APP__/kafka-hook-1.0-SNAPSHOT/g') && \
+  cd rest/target/*-native-image-source-jar && \
+  native-image $(curl -sL https://github.com/solsson/quarkus-graalvm-builds/raw/593699ab9795414fd8b992922dd4d9611c3184bf/rest-json-quickstart.txt | sed 's/__APP__/kafka-hook-rest-1.0-SNAPSHOT/g') && \
   mv *-runner ../ \
 )
 
@@ -33,8 +37,8 @@ FROM solsson/kafka:jre@sha256:9374540e6643ac577056e900872793cc4a96687025e3b492e9
   as jvm
 
 WORKDIR /app
-COPY --from=dev /workspace/target/lib ./lib
-COPY --from=dev /workspace/target/*-runner.jar ./app.jar
+COPY --from=dev /workspace/rest/target/lib ./lib
+COPY --from=dev /workspace/rest/target/*-runner.jar ./app.jar
 
 EXPOSE 8080
 ENTRYPOINT [ "java", \
@@ -44,20 +48,6 @@ ENTRYPOINT [ "java", \
   "-cp", "./lib/*", \
   "-jar", "./app.jar" ]
 
-FROM gcr.io/distroless/base-debian10:nonroot@sha256:f4a1b1083db512748a305a32ede1d517336c8b5bead1c06c6eac2d40dcaab6ad
+FROM yolean/runtime-quarkus:dc1392b4cdb17073343b113213cba34efef9aabf@sha256:5036788a4e94e72a96858a13f04f3a3541ad1fb4b956c38119f05a76bab578cf
 
-COPY --from=dev \
-  /lib/x86_64-linux-gnu/libz.so.* \
-  /lib/x86_64-linux-gnu/
-
-COPY --from=dev \
-  /usr/lib/x86_64-linux-gnu/libzstd.so.* \
-  /usr/lib/x86_64-linux-gnu/libsnappy.so.* \
-  /usr/lib/x86_64-linux-gnu/liblz4.so.* \
-  /usr/lib/x86_64-linux-gnu/
-
-COPY --from=dev /workspace/target/*-runner /usr/local/bin/app
-
-EXPOSE 8080
-ENTRYPOINT ["app", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager"]
-CMD ["-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=8080"]
+COPY --from=dev /workspace/rest/target/*-runner /usr/local/bin/quarkus
