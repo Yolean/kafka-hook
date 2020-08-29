@@ -33,7 +33,7 @@ RUN test "$build" != "native-image" || ( \
   mv *-runner ../ \
 )
 
-FROM solsson/kafka:jre@sha256:9374540e6643ac577056e900872793cc4a96687025e3b492e93ad8d10c8e429b \
+FROM yolean/java:dc1392b4cdb17073343b113213cba34efef9aabf@sha256:f19fc496ebee75a4397e1b4bb0e4acc0868c73d64f420e9b43bd14e277083e0d \
   as jvm
 
 WORKDIR /app
