@@ -25,34 +25,11 @@
     <quarkus.platform.version>1.7.1.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
     <!-- keep in sync with quarkus defaults -->
-    <slf4j.version>1.7.30</slf4j.version>
-    <jecdi.version>2.0.2</jecdi.version>
     <jaxrs.version>2.0.1.Final</jaxrs.version>
     <jackson.version>2.11.2</jackson.version>
     <junit.version>5.6.2</junit.version>
     <hamcrest.version>2.1</hamcrest.version>
   </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>jakarta.enterprise</groupId>
-        <artifactId>jakarta.enterprise.cdi-api</artifactId>
-        <version>${jecdi.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter</artifactId>
-        <version>${junit.version}</version>
-        <scope>test</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
   <build>
     <plugins>
       <plugin>
