@@ -13,11 +13,13 @@
   </modules>
 
   <distributionManagement>
+    <snapshotRepository>
+      <id>gitlocal</id>
+      <url>file://${maven.multiModuleProjectDirectory}/snapshots</url>
+    </snapshotRepository>
     <repository>
-      <id>github</id>
-      <name>GitHub Packages</name>
-      <!-- NOTE "public" isn't public: https://github.community/t/download-from-github-package-registry-without-authentication/14407/30 -->
-      <url>https://maven.pkg.github.com/Yolean/kafka-hook</url>
+      <id>gitlocal</id>
+      <url>file://${maven.multiModuleProjectDirectory}/releases</url>
     </repository>
   </distributionManagement>
 
