@@ -27,11 +27,7 @@ ARG build="native-image"
 
 RUN test "$build" = "native-image" || mvn --batch-mode $build
 
-RUN test "$build" != "native-image" || ( \
-  cd rest/target/*-native-image-source-jar && \
-  native-image $(curl -sL https://github.com/solsson/quarkus-graalvm-builds/raw/61ce76a812026cdefae366f47b7f03bc97b254c3/rest-json-quickstart.txt | sed 's/__APP__/kafka-hook-rest-1.0-SNAPSHOT/g') && \
-  mv *-runner ../ \
-)
+RUN test "$build" != "native-image" || mvn --batch-mode package -Pnative -Dmaven.test.skip=true
 
 FROM yolean/java:f63772d02556021dbcb9f49fb9eff3d3dbe1b636@sha256:1bc5b3456a64fb70c85825682777c55a0999d9be56aca9bb1f507fe9b9171f83 \
   as jvm
