@@ -1,4 +1,4 @@
-FROM yolean/builder-quarkus:6e76f75eb32a56bbb9fef78ab92e621e30ae9ab1@sha256:c0f12ccb889e7270817a25df947a7e8e1f0ecd00cbe761771ffa0376fc8b4033 \
+FROM yolean/builder-quarkus:f63772d02556021dbcb9f49fb9eff3d3dbe1b636@sha256:6817137412415bc62dea3869824c424abc9c0246e3ac684b7454d4d29ba0b946 \
   as dev
 
 COPY --chown=nonroot:nogroup pom.xml .
@@ -29,11 +29,11 @@ RUN test "$build" = "native-image" || mvn --batch-mode $build
 
 RUN test "$build" != "native-image" || ( \
   cd rest/target/*-native-image-source-jar && \
-  native-image $(curl -sL https://github.com/solsson/quarkus-graalvm-builds/raw/593699ab9795414fd8b992922dd4d9611c3184bf/rest-json-quickstart.txt | sed 's/__APP__/kafka-hook-rest-1.0-SNAPSHOT/g') && \
+  native-image $(curl -sL https://github.com/solsson/quarkus-graalvm-builds/raw/61ce76a812026cdefae366f47b7f03bc97b254c3/rest-json-quickstart.txt | sed 's/__APP__/kafka-hook-rest-1.0-SNAPSHOT/g') && \
   mv *-runner ../ \
 )
 
-FROM yolean/java:6e76f75eb32a56bbb9fef78ab92e621e30ae9ab1@sha256:3838b874d68be7e466aa2e5c17b3be649b4aa9554652ab4540ff254543ec328a \
+FROM yolean/java:f63772d02556021dbcb9f49fb9eff3d3dbe1b636@sha256:1bc5b3456a64fb70c85825682777c55a0999d9be56aca9bb1f507fe9b9171f83 \
   as jvm
 
 WORKDIR /app
@@ -48,6 +48,6 @@ ENTRYPOINT [ "java", \
   "-cp", "./lib/*", \
   "-jar", "./app.jar" ]
 
-FROM yolean/runtime-quarkus:6e76f75eb32a56bbb9fef78ab92e621e30ae9ab1@sha256:6b7907fae51dff29a23299fa274bdbb9b5c611b4b59ae8e2a4e987a9b0d18d09
+FROM yolean/runtime-quarkus:f63772d02556021dbcb9f49fb9eff3d3dbe1b636@sha256:5619b52835239a57ab324500f8d17bc935c4e38e9f0f1a5d28348955df0a33b0
 
 COPY --from=dev /workspace/rest/target/*-runner /usr/local/bin/quarkus
