@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.UUID;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -35,12 +36,18 @@ import se.yolean.kafka.hook.types.v1.HookError;
 import se.yolean.kafka.hook.types.v1.HookMessageKey;
 import se.yolean.kafka.hook.types.v1.HookReceipt;
 
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+
+import io.smallrye.reactive.messaging.kafka.OutgoingKafkaRecordMetadata;
+import io.smallrye.reactive.messaging.kafka.Record;
+
 @ApplicationScoped
 public class KafkaHookResource {
 
   private static final Logger logger = LoggerFactory.getLogger(KafkaHookResource.class);
 
-  @Inject Producer producer;
+  @Inject @Channel("hook") Emitter<Record<HookMessageKey, CloudEvent>> emitter;
   @Inject CloudeventConfiguration config;
   @Inject LimitsConfiguration limits;
   @Inject CloudeventExtender extensions;
@@ -81,7 +88,8 @@ public class KafkaHookResource {
     HookMessageKey key = new HookMessageKey();
     key.setId(id);
     key.setType(type);
-    Future<RecordMetadata> resultMaybe = producer.send(key, message);
+    Record<HookMessageKey, CloudEvent> record = Record.of(key, message);
+    CompletionStage<Void> resultMaybe = emitter.send(record);
     RecordMetadata result;
     try {
       result = resultMaybe.get(limits.getProduceTimeout().toSeconds(), TimeUnit.SECONDS);
