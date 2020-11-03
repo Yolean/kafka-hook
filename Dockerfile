@@ -1,4 +1,4 @@
-FROM yolean/builder-quarkus:52b998dd833fdc2d5bc8dbd45f69269070858661@sha256:527d5dd90992356bf1c6621e43302983da6a9ab4d1623a390879cd768e5f252e \
+FROM yolean/builder-quarkus:07ebabe607a117c8b6446c74d16eba9afe773ef4@sha256:ee3216eca700410d3f52d773d38394484f971e5bfdd38bb00a4f2de4e2db9eb9 \
   as dev
 
 COPY --chown=nonroot:nogroup pom.xml .
