@@ -1,6 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>se.yolean</groupId>
   <artifactId>kafka-hook-parent</artifactId>
@@ -24,21 +24,21 @@
   </distributionManagement>
 
   <properties>
-    <compiler-plugin.version>3.8.1</compiler-plugin.version>
-    <maven.compiler.parameters>true</maven.compiler.parameters>
-    <maven.compiler.source>11</maven.compiler.source>
+    <surefire-plugin.version>2.22.1</surefire-plugin.version>
     <maven.compiler.target>11</maven.compiler.target>
+    <quarkus.platform.version>1.10.2.Final</quarkus.platform.version>
+    <maven.compiler.source>11</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <quarkus-plugin.version>1.9.2.Final</quarkus-plugin.version>
     <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.parameters>true</maven.compiler.parameters>
+    <quarkus-plugin.version>1.10.2.Final</quarkus-plugin.version>
+    <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-    <quarkus.platform.version>1.9.2.Final</quarkus.platform.version>
-    <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
     <!-- keep in sync with quarkus defaults -->
     <jaxrs.version>2.0.1.Final</jaxrs.version>
     <jackson.version>2.11.3</jackson.version>
-    <junit.version>5.6.2</junit.version>
+    <junit.version>5.7.0</junit.version>
     <hamcrest.version>2.1</hamcrest.version>
   </properties>
   <build>
@@ -51,12 +51,13 @@
         <configuration>
           <skip>true</skip>
         </configuration>
+        <extensions>true</extensions>
         <executions>
           <execution>
             <goals>
+              <goal>build</goal>
               <goal>generate-code</goal>
               <goal>generate-code-tests</goal>
-              <goal>build</goal>
             </goals>
           </execution>
         </executions>
@@ -113,5 +114,4 @@
       </properties>
     </profile>
   </profiles>
-
 </project>
