@@ -1,4 +1,4 @@
-FROM yolean/builder-quarkus:97106b25f7043eff845fc2192f2f2268e5cc0780@sha256:11e4d4105f915d755acfc3acf2c142760c38e22ea1d44c568204ce2c22d312e8 \
+FROM yolean/builder-quarkus:2c6e176109a4cb1850cb7f8fa56411d370e3f705@sha256:9d309b1c352b1334eff63902216dc950a54eaf4433e985ed68ad9f5231750b48 \
   as dev
 
 COPY --chown=nonroot:nogroup pom.xml .
@@ -44,6 +44,6 @@ ENTRYPOINT [ "java", \
   "-cp", "./lib/*", \
   "-jar", "./app.jar" ]
 
-FROM yolean/runtime-quarkus:ccf1569eec4cea1b9fe0cb024021046f526cf7a1@sha256:017d8f0ea7c29c30606c5bd2c74d1dc65beca0264e5f55970970b9593c6c5cf9
+FROM yolean/runtime-quarkus:2c6e176109a4cb1850cb7f8fa56411d370e3f705@sha256:00758a8e8941e8e47c2fb9dd8a055972f62e55c5b91c8fedcf14603a2900e0a0
 
 COPY --from=dev /workspace/rest/target/*-runner /usr/local/bin/quarkus
