@@ -8,6 +8,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.junit.jupiter.api.Test;
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import se.yolean.kafka.hook.CloudeventConfiguration;
 
 /**
@@ -18,7 +19,7 @@ class KafkaHookResourceTest {
 
   @Test
   void testGetSourceInitialHardcodedBehaviorThatShouldChange() {
-	KafkaHookResource resource = new KafkaHookResource();
+	KafkaHookResource resource = new KafkaHookResource(new SimpleMeterRegistry());
 	resource.config = mock(CloudeventConfiguration.class);
 	when(resource.config.getSourceHost()).thenReturn("example.com");
 	UriInfo uri = mock(UriInfo.class);
