@@ -3,6 +3,9 @@ package se.yolean.kafka.hook.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -11,10 +14,6 @@ import java.util.concurrent.TimeoutException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -27,6 +26,9 @@ import org.slf4j.MDC;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import se.yolean.kafka.hook.CloudeventConfiguration;
 import se.yolean.kafka.hook.CloudeventExtender;
 import se.yolean.kafka.hook.LimitsConfiguration;
@@ -44,6 +46,16 @@ public class KafkaHookResource {
   @Inject CloudeventConfiguration config;
   @Inject LimitsConfiguration limits;
   @Inject CloudeventExtender extensions;
+
+  private final Map<HookError.Error, Counter> countProduceErrors;
+
+  public KafkaHookResource(MeterRegistry registry) {
+    countProduceErrors = new HashMap<>();
+    countProduceErrors.put(null, registry.counter("produce.errors", Arrays.asList(Tag.of("error", "undefined"))));
+    for (HookError.Error error: HookError.Error.values()) {
+      countProduceErrors.put(error, registry.counter("produce.errors", Arrays.asList(Tag.of("error", error.value().toLowerCase()))));
+    }
+  }
 
   URI getSource(UriInfo uri) {
     return URI.create(config.getSourceHost() + "/hook/v1/");
@@ -88,10 +100,12 @@ public class KafkaHookResource {
     } catch (InterruptedException e) {
       err.setError(HookError.Error.INTERRUPTED);
       logger.error("Producer send interrupted", e);
+      countProduceErrors.get(err.getError()).increment();
       return Response.serverError().entity(err).build();
     } catch (TimeoutException e) {
       err.setError(HookError.Error.TIMEOUT);
       logger.error("Producer send timeout", e);
+      countProduceErrors.get(err.getError()).increment();
       return Response.serverError().entity(err).build();
     } catch (ExecutionException e) {
       if (e.getCause() != null) {
@@ -103,6 +117,7 @@ public class KafkaHookResource {
       }
       MDC.put("err", err.getError().toString());
       logger.error("Producer send failed", e);
+      countProduceErrors.get(err.getError()).increment();
       return Response.serverError().entity(err).build();
     }
     HookReceipt receipt = new HookReceipt();
