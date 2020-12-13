@@ -10,10 +10,10 @@
   </parent>
   <artifactId>kafka-hook</artifactId>
   <dependencies>
-    <dependency><!-- library uses this for the cloudevent extension, but shouldn't annotate anything jaxrs -->
-      <groupId>org.jboss.spec.javax.ws.rs</groupId>
-      <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-      <version>${jaxrs.version}</version>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+      <version>${vertx.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
