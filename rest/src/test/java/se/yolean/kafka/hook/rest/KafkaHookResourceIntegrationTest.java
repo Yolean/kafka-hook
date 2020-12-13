@@ -29,6 +29,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Duration;
@@ -158,6 +159,44 @@ public class KafkaHookResourceIntegrationTest {
     assertEquals("github.com/Yolean/kafka-hook/", headers(record1).get("ce_type"));
     assertThat(headers(record2).keySet(), hasItems("ce_type"));
     assertEquals("github.com/Yolean/kafka-hook/mytype", headers(record2).get("ce_type"));
+  }
+
+  @Test
+  public void testProduceAlternativeUrls() throws UnsupportedEncodingException {
+    given()
+      .contentType(ContentType.TEXT)
+      .accept(ContentType.JSON)
+      .body("test1".getBytes())
+      .when().post("/hook/v1/mytype/with/slashes")
+      .then()
+        .body(containsString("\"offset\":" + (startOffset)))
+        .statusCode(200);
+    given()
+      .contentType(ContentType.TEXT)
+      .accept(ContentType.JSON)
+      .body("test2".getBytes())
+      .when().post("/some-prefix/v1/hook")
+      .then()
+        .body(containsString("\"offset\":" + (startOffset + 1)))
+        .statusCode(200);
+    given()
+      .contentType(ContentType.TEXT)
+      .accept(ContentType.JSON)
+      .body("test3".getBytes())
+      .when().post("/some-prefix/v1/hook/sub/type/")
+      .then()
+        .body(containsString("\"offset\":" + (startOffset + 2)))
+        .statusCode(200);
+    waitBetweenPolls();
+    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+    Iterator<ConsumerRecord<String, String>> it = records.iterator();
+    ConsumerRecord<String, String> record1 = it.next();
+    assertEquals("github.com/Yolean/kafka-hook/mytype/with/slashes", headers(record1).get("ce_type"));
+    ConsumerRecord<String, String> record2 = it.next();
+    assertEquals("github.com/Yolean/kafka-hook/", headers(record2).get("ce_type"));
+    ConsumerRecord<String, String> record3 = it.next();
+    assertNotEquals("github.com/Yolean/kafka-hook/sub/type/", headers(record3).get("ce_type"));
+    assertEquals("github.com/Yolean/kafka-hook/sub/type", headers(record3).get("ce_type"));
   }
 
   @Test
