@@ -17,20 +17,35 @@ import javax.ws.rs.core.UriInfo;
 import se.yolean.kafka.hook.http.KafkaHookResource;
 
 @Produces(MediaType.APPLICATION_JSON)
-@Path("/hook/v1")
+@Path("/")
 public class KafkaHookRestResource {
 
   @Inject KafkaHookResource hook;
 
   @POST
-  public Response produce(@Context HttpHeaders headers, @Context UriInfo uri, InputStream payload) throws IOException {
+  @Path("hook/v1")
+  public Response produce(@Context HttpHeaders headers, @Context UriInfo uri, InputStream payload)
+      throws IOException {
     return hook.produce(headers, uri, "", payload);
   }
 
   @POST
-  @Path("/{type}")
+  @Path("hook/v1/{type:.*}")
   public Response produce(@Context HttpHeaders headers, @Context UriInfo uri, @PathParam("type") String type, InputStream payload)
-      // if we fail to read the payload, which would be very strange
+      throws IOException {
+    return hook.produce(headers, uri, type, payload);
+  }
+
+  @POST
+  @Path("{prefix}/v1/hook")
+  public Response produceAltPathWithoutType(@Context HttpHeaders headers, @Context UriInfo uri, InputStream payload)
+      throws IOException {
+    return hook.produce(headers, uri, "", payload);
+  }
+
+  @POST
+  @Path("{prefix}/v1/hook/{type:.*}")
+  public Response produceAltPath(@Context HttpHeaders headers, @Context UriInfo uri, @PathParam("type") String type, InputStream payload)
       throws IOException {
     return hook.produce(headers, uri, type, payload);
   }

@@ -8,18 +8,8 @@
     <version>1.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <artifactId>kafka-hook</artifactId>
+  <artifactId>kafka-hook-model</artifactId>
   <dependencies>
-    <dependency>
-      <groupId>se.yolean</groupId>
-      <artifactId>kafka-hook-model</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency><!-- library uses this for the cloudevent extension, but shouldn't annotate anything jaxrs -->
-      <groupId>org.jboss.spec.javax.ws.rs</groupId>
-      <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-      <version>${jaxrs.version}</version>
-    </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
@@ -28,11 +18,6 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
-      <version>${quarkus.platform.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-kafka-client</artifactId>
       <version>${quarkus.platform.version}</version>
     </dependency>
     <dependency>
@@ -46,11 +31,6 @@
       <version>${cloudevents.version}</version>
     </dependency>
     <dependency>
-      <groupId>io.cloudevents</groupId>
-      <artifactId>cloudevents-kafka</artifactId>
-      <version>${cloudevents.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>${junit.version}</version>
@@ -59,7 +39,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>3.5.7</version>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -68,11 +48,40 @@
       <version>${hamcrest.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency><!-- tests use MultivaluedMapImpl from here -->
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-core</artifactId>
-      <version>4.5.6.Final</version>
-      <scope>test</scope>
+    <dependency><!-- only because we use config string constants from kafka-clients -->
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-kafka-client</artifactId>
+      <version>${quarkus.platform.version}</version>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jsonschema2pojo</groupId>
+        <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+        <version>1.0.2</version>
+        <configuration>
+          <sourceDirectory>${basedir}/src/main/jsonschema</sourceDirectory>
+          <targetPackage>se.yolean.kafka.hook.types.v1</targetPackage>
+          <sourceType>yamlschema</sourceType>
+          <generateBuilders>false</generateBuilders>
+          <customAnnotator>io.radanalytics.operator.annotator.RegisterForReflectionAnnotator</customAnnotator>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>io.radanalytics</groupId>
+            <artifactId>abstract-operator-annotator</artifactId>
+            <version>0.6.7</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
 </project>
