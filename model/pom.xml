@@ -48,6 +48,11 @@
       <version>${hamcrest.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency><!-- only because we use config string constants from kafka-clients -->
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-kafka-client</artifactId>
+      <version>${quarkus.platform.version}</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
