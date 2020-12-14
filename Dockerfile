@@ -2,11 +2,12 @@ FROM yolean/builder-quarkus:2c6e176109a4cb1850cb7f8fa56411d370e3f705@sha256:9d30
   as dev
 
 COPY --chown=nonroot:nogroup pom.xml .
+COPY --chown=nonroot:nogroup model/pom.xml model/
 COPY --chown=nonroot:nogroup lib/pom.xml lib/
 COPY --chown=nonroot:nogroup rest/pom.xml rest/
 
-RUN mkdir -p rest/target/
-RUN cd lib && y-build-quarkus-cache
+RUN mkdir -p lib/target rest/target/
+RUN cd model && y-build-quarkus-cache
 
 COPY . .
 

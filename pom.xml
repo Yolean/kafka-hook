@@ -8,6 +8,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>model</module>
     <module>lib</module>
     <module>rest</module>
   </modules>
@@ -39,6 +40,8 @@
     <micrometer.version>1.5.6</micrometer.version>
     <junit.version>5.7.0</junit.version>
     <hamcrest.version>2.1</hamcrest.version>
+    <mockito.version>3.5.7</mockito.version>
+    <cloudevents.version>2.0.0.RC2</cloudevents.version>
   </properties>
   <build>
     <plugins>

@@ -1,5 +1,7 @@
 *
 !pom.xml
+!model/pom.xml
+!model/src
 !lib/pom.xml
 !lib/src
 !rest/pom.xml
