@@ -4,10 +4,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import io.cloudevents.CloudEventExtensions;
-import io.cloudevents.Extension;
+/**
+ * Note that this "extension" fails to produce field names that comply with
+ * https://github.com/cloudevents/spec/blob/master/spec.md#attribute-naming-convention
+ */
+public class IncomingWebhookExtension implements HookCustomFields { //io.cloudevents.Extension {
 
-public class IncomingWebhookExtension implements Extension {
+  // @Override
+  // public void readFrom(CloudEventExtensions extensions) {
+  //   throw new UnsupportedOperationException("TODO this extension currently only only supports writing");
+  // }
 
   private Map<String,String> fields = new LinkedHashMap<>(10);
 
@@ -41,15 +47,15 @@ public class IncomingWebhookExtension implements Extension {
   public Object getValue(String key) {
     return fields.get(key);
   }
-  
+
   @Override
-  public Set<String> getKeys() {
-    return fields.keySet();
+  public byte[] getValueBytes(String key) {
+    return fields.get(key).getBytes();
   }
 
   @Override
-  public void readFrom(CloudEventExtensions extensions) {
-    throw new UnsupportedOperationException("TODO this extension currently only only supports writing");
+  public Set<String> getKeys() {
+    return fields.keySet();
   }
 
   @Override
