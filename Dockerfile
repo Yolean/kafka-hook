@@ -1,4 +1,4 @@
-FROM yolean/builder-quarkus:2c6e176109a4cb1850cb7f8fa56411d370e3f705@sha256:9d309b1c352b1334eff63902216dc950a54eaf4433e985ed68ad9f5231750b48 \
+FROM yolean/builder-quarkus:f7f5b1c5790e0c755e85bbc00d576875d4fa7bf5@sha256:d6bffbecb6c5ba48029206a39c1ee9292a4911b12283517b12cb64718cf0b871 \
   as dev
 
 COPY --chown=nonroot:nogroup pom.xml .
@@ -30,7 +30,7 @@ RUN test "$build" = "native-image" || mvn --batch-mode $build
 
 RUN test "$build" != "native-image" || mvn --batch-mode package -Pnative -Dmaven.test.skip=true
 
-FROM yolean/java:ccf1569eec4cea1b9fe0cb024021046f526cf7a1@sha256:6cf17f70498db56b7fda08d07098f9d5991fd8f8a6e3f1d38e9aa3ee89cef780 \
+FROM yolean/java:f7f5b1c5790e0c755e85bbc00d576875d4fa7bf5@sha256:ed802e9d138b0e0059698d01d930bda65241d70c286590667922a532552cc694 \
   as jvm
 
 WORKDIR /app
@@ -45,6 +45,6 @@ ENTRYPOINT [ "java", \
   "-cp", "./lib/*", \
   "-jar", "./app.jar" ]
 
-FROM yolean/runtime-quarkus:2c6e176109a4cb1850cb7f8fa56411d370e3f705@sha256:00758a8e8941e8e47c2fb9dd8a055972f62e55c5b91c8fedcf14603a2900e0a0
+FROM yolean/runtime-quarkus:f7f5b1c5790e0c755e85bbc00d576875d4fa7bf5@sha256:a75181747faceeaab2f360d9c19af06be79943182b8fd8666b1a7ef716ef3b47
 
 COPY --from=dev /workspace/rest/target/*-runner /usr/local/bin/quarkus
