@@ -2,7 +2,7 @@ package se.yolean.kafka.hook.cloudevents;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat; 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -51,9 +51,8 @@ public class IncomingWebhookExtensionTest {
 
   @Test
   public void testCapNull() {
-    IncomingWebhookExtension ext = new IncomingWebhookExtension("h_", 1, "");
     try {
-      ext = new IncomingWebhookExtension("h_", 1, null);
+      new IncomingWebhookExtension("h_", 1, null);
     } catch (IllegalArgumentException e) {
       // expected
     }

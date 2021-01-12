@@ -151,9 +151,9 @@ public class KafkaHookResourceIntegrationTest {
     assertEquals("test1", record1.value());
     assertEquals("test2", record2.value());
     consumer.commitSync();
-    assertThat(headers(record2).keySet(), hasItems("ce_hook_x-forwarded-for"));
-    assertEquals("127.0.0.1", headers(record2).get("ce_hook_x-forwarded-for"));
-    assertThat(headers(record2).keySet(), not(hasItems("ce_hook_cookie")));
+    assertThat(headers(record2).keySet(), hasItems("hook_x-forwarded-for"));
+    assertEquals("127.0.0.1", headers(record2).get("hook_x-forwarded-for"));
+    assertThat(headers(record2).keySet(), not(hasItems("hook_cookie")));
     // types from default config
     assertThat(headers(record1).keySet(), hasItems("ce_type"));
     assertEquals("github.com/Yolean/kafka-hook/", headers(record1).get("ce_type"));

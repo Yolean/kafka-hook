@@ -13,7 +13,6 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.cloudevents.CloudEvent;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
@@ -32,7 +31,7 @@ public class Producer {
 
   @Inject ProducerConfiguration config;
 
-  KafkaProducer<HookMessageKey, CloudEvent> producer = null;
+  KafkaProducer<HookMessageKey, HookCloudEvent> producer = null;
 
   void onStart(@Observes StartupEvent ev) {
     Map<String,Object> props = KafkaProps.fromQuarkusOutgoingConfig(config);
@@ -43,8 +42,8 @@ public class Producer {
     producer.close(KafkaProps.PRODUCER_CLOSE_TIMEOUT);
   }
 
-  public Future<RecordMetadata> send(HookMessageKey key, CloudEvent message) {
-    return producer.send(new ProducerRecord<HookMessageKey,CloudEvent>(config.getTopic(), key, message));
+  public Future<RecordMetadata> send(HookMessageKey key, HookCloudEvent message) {
+    return producer.send(new ProducerRecord<HookMessageKey,HookCloudEvent>(config.getTopic(), key, message));
   }
 
 }
