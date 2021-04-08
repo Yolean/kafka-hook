@@ -59,3 +59,13 @@ Not supported:
    - They do get included with prefix in http headers thouhg
  - `sync` query parameter (kafka-hook is always sync=true)
  - `key` query parameter
+
+## Building
+
+```
+GIT_STATUS=$(git status --untracked-files=no --porcelain=v2)
+SOURCE_COMMIT=$(git rev-parse --verify HEAD)
+[ -z "$GIT_STATUS" ] || SOURCE_COMMIT="$SOURCE_COMMIT-dirty"
+docker buildx build -t yolean/kafka-hook:$SOURCE_COMMIT-jvm --target=jvm .
+docker buildx build -t yolean/kafka-hook:$SOURCE_COMMIT .
+```
