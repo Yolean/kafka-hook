@@ -31,8 +31,10 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import se.yolean.kafka.hook.CloudeventConfiguration;
 import se.yolean.kafka.hook.CloudeventExtender;
+import se.yolean.kafka.hook.HookCloudEvent;
 import se.yolean.kafka.hook.LimitsConfiguration;
 import se.yolean.kafka.hook.Producer;
+import se.yolean.kafka.hook.cloudevents.IncomingWebhookExtension;
 import se.yolean.kafka.hook.types.v1.HookError;
 import se.yolean.kafka.hook.types.v1.HookMessageKey;
 import se.yolean.kafka.hook.types.v1.HookReceipt;
@@ -82,14 +84,15 @@ public class KafkaHookResource {
     HookError err = new HookError();
     byte[] data = payload.readAllBytes();
     // TODO handle too large payloads
-    CloudEvent message = CloudEventBuilder.v1()
+    IncomingWebhookExtension hookCustomFields = extensions.getHttp(headers, uri);
+    CloudEvent event = CloudEventBuilder.v1()
         .withId(id)
         .withType(eventtype)
         .withSource(getSource(uri))
         .withExtension(extensions.getTracing(headers))
-        .withExtension(extensions.getHttp(headers, uri))
         .withData(data)
         .build();
+    HookCloudEvent message = new HookCloudEvent(event, hookCustomFields);
     HookMessageKey key = new HookMessageKey();
     key.setId(id);
     key.setType(type);
