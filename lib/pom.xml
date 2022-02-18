@@ -36,9 +36,14 @@
       <version>${quarkus.platform.version}</version>
     </dependency>
     <dependency>
-      <groupId>io.micrometer</groupId>
-      <artifactId>micrometer-core</artifactId>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-micrometer</artifactId>
       <version>${micrometer.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.cloudevents</groupId>

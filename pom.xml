@@ -34,12 +34,12 @@
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
     <!-- keep in sync with quarkus defaults -->
     <jaxrs.version>2.0.1.Final</jaxrs.version>
-    <resteasy.version>4.7.0.Final</resteasy.version>
-    <jackson.version>2.12.4</jackson.version>
-    <micrometer.version>1.7.3</micrometer.version>
-    <junit.version>5.7.2</junit.version>
+    <resteasy.version>4.7.5.Final</resteasy.version>
+    <jackson.version>2.13.1</jackson.version>
+    <micrometer.version>1.8.2</micrometer.version>
+    <junit.version>5.8.2</junit.version>
     <hamcrest.version>2.1</hamcrest.version>
-    <mockito.version>3.5.7</mockito.version>
+    <mockito.version>4.3.1</mockito.version>
     <cloudevents.version>2.2.0</cloudevents.version>
   </properties>
 
