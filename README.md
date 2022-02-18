@@ -66,6 +66,7 @@ Not supported:
 GIT_STATUS=$(git status --untracked-files=no --porcelain=v2)
 SOURCE_COMMIT=$(git rev-parse --verify HEAD)
 [ -z "$GIT_STATUS" ] || SOURCE_COMMIT="$SOURCE_COMMIT-dirty"
-docker buildx build -t yolean/kafka-hook:$SOURCE_COMMIT-jvm --target=jvm .
-docker buildx build -t yolean/kafka-hook:$SOURCE_COMMIT .
+docker buildx build --platform=linux/amd64,linux/arm64/v8 -t yolean/kafka-hook:$SOURCE_COMMIT-jvm --target=jvm .
+# Expect terrible build performance on non-amd64 hosts
+docker buildx build --platform=linux/amd64 -t yolean/kafka-hook:$SOURCE_COMMIT .
 ```
