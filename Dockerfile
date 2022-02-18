@@ -36,7 +36,7 @@ RUN test "$build" = "native-image" || mvn --batch-mode $build
 
 RUN test "$build" != "native-image" || mvn --batch-mode package -Pnative -Dmaven.test.skip=true
 
-FROM --platform=$TARGETPLATFORM docker.io/yolean/untime-quarkus-ubuntu-jre:d091be226e9a62ee3cba9816cafedb8a06a17012@sha256:a4e85350a79341fe2216001ec500511066094ea0c387acb2f3627ca11951882c \
+FROM --platform=$TARGETPLATFORM docker.io/yolean/runtime-quarkus-ubuntu-jre:d091be226e9a62ee3cba9816cafedb8a06a17012@sha256:a4e85350a79341fe2216001ec500511066094ea0c387acb2f3627ca11951882c \
   as jvm
 
 WORKDIR /app
