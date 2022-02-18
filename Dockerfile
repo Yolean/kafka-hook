@@ -7,7 +7,7 @@ COPY --chown=nonroot:nogroup lib/pom.xml lib/
 COPY --chown=nonroot:nogroup rest/pom.xml rest/
 
 RUN mkdir -p lib/target rest/target/
-RUN cd model && y-build-quarkus-cache
+#RUN cd model && y-build-quarkus-cache
 
 COPY --chown=nonroot:nogroup . .
 
