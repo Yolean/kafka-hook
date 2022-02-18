@@ -1,4 +1,4 @@
-FROM yolean/builder-quarkus:907bcbc85d22a29d3243e2af97a0b09fba2ee4ce@sha256:91ef470b901eb6a0031f278f4a04d26ee1844f514b08826f5e7c16d661d8525d \
+FROM docker.io/yolean/builder-quarkus:8fcf5d01ecddc1253f87f352e02b7760603534e0@sha256:2230db63340d9768c63bae7fdb5662f1b5ffceb9d486e9a742e26102cd41664e \
   as dev
 
 COPY --chown=nonroot:nogroup pom.xml .
@@ -36,7 +36,7 @@ RUN test "$build" = "native-image" || mvn --batch-mode $build
 
 RUN test "$build" != "native-image" || mvn --batch-mode package -Pnative -Dmaven.test.skip=true
 
-FROM yolean/java:907bcbc85d22a29d3243e2af97a0b09fba2ee4ce@sha256:63674354bd7f6f6660af89b483df98124c7d3062ce1e59a12ec012a47be769a3 \
+FROM docker.io/yolean/untime-quarkus-ubuntu-jre:d091be226e9a62ee3cba9816cafedb8a06a17012@sha256:a4e85350a79341fe2216001ec500511066094ea0c387acb2f3627ca11951882c \
   as jvm
 
 WORKDIR /app
@@ -49,6 +49,6 @@ ENTRYPOINT [ "java", \
   "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", \
   "-jar", "quarkus-run.jar" ]
 
-FROM yolean/runtime-quarkus-ubuntu:907bcbc85d22a29d3243e2af97a0b09fba2ee4ce@sha256:d192704054b0eb6e089f379a77f83f90fb9ad5061e9748910ce48887766e8b81
+FROM docker.io/yolean/runtime-quarkus-ubuntu:d091be226e9a62ee3cba9816cafedb8a06a17012@sha256:a4b4e77494c26720321b54a442b4806cdb59d426ae2266802bc5c8ed794dd2b6
 
 COPY --from=dev /workspace/rest/target/*-runner /usr/local/bin/quarkus
