@@ -13,17 +13,14 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
-      <version>${quarkus.platform.version}</version>
     </dependency>
     <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-core</artifactId>
-      <version>${micrometer.version}</version>
     </dependency>
     <dependency>
       <groupId>io.cloudevents</groupId>
@@ -33,13 +30,11 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -51,7 +46,6 @@
     <dependency><!-- only because we use config string constants from kafka-clients -->
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-kafka-client</artifactId>
-      <version>${quarkus.platform.version}</version>
     </dependency>
   </dependencies>
   <build>

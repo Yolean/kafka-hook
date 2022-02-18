@@ -32,15 +32,9 @@
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>2.7.1.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-    <!-- keep in sync with quarkus defaults -->
-    <jaxrs.version>2.0.1.Final</jaxrs.version>
-    <resteasy.version>4.7.5.Final</resteasy.version>
-    <jackson.version>2.13.1</jackson.version>
-    <micrometer.version>1.8.2</micrometer.version>
-    <junit.version>5.8.2</junit.version>
-    <hamcrest.version>2.1</hamcrest.version>
-    <mockito.version>4.3.1</mockito.version>
-    <cloudevents.version>2.2.0</cloudevents.version>
+    <!-- versions not managed through quarkus extensions -->
+    <hamcrest.version>2.2</hamcrest.version>
+    <cloudevents.version>2.3.0</cloudevents.version>
   </properties>
 
   <dependencyManagement>
