@@ -66,7 +66,35 @@ Not supported:
 GIT_STATUS=$(git status --untracked-files=no --porcelain=v2)
 SOURCE_COMMIT=$(git rev-parse --verify HEAD)
 [ -z "$GIT_STATUS" ] || SOURCE_COMMIT="$SOURCE_COMMIT-dirty"
-docker buildx build --platform=linux/amd64,linux/arm64/v8 -t yolean/kafka-hook:$SOURCE_COMMIT-jvm --target=jvm .
+docker buildx build --platform=linux/amd64,linux/arm64/v8 -t yolean/kafka-hook:$SOURCE_COMMIT-jvm --build-arg=build="validate" --target=jvm .
 # Expect terrible build performance on non-amd64 hosts
 docker buildx build --platform=linux/amd64 -t yolean/kafka-hook:$SOURCE_COMMIT .
+```
+
+## Build using rootless Buildkit + nerdctl
+
+```
+GIT_STATUS=$(git status --untracked-files=no --porcelain=v2)
+SOURCE_COMMIT=$(git rev-parse --verify HEAD)
+[ -z "$GIT_STATUS" ] || SOURCE_COMMIT="$SOURCE_COMMIT-dirty"
+nerdctl build --platform=linux/amd64,linux/arm64/v8 \
+  -t yolean/kafka-hook:$SOURCE_COMMIT-jvm --build-arg=build="validate" --target=jvm .
+nerdctl build --platform=linux/amd64 \
+  -t yolean/kafka-hook:$SOURCE_COMMIT .
+nerdctl push --platform=linux/amd64,linux/arm64/v8 yolean/kafka-hook:$SOURCE_COMMIT-jvm
+nerdctl push --platform=linux/amd64 yolean/kafka-hook:$SOURCE_COMMIT
+```
+
+### Workaround for port collision
+
+Note that buildkit defaults to running patforms in parallel,
+which means that when Quarkus allocates a port during unit tests
+one of the builds is likely to fail on port already in use.
+
+Can [not](https://github.com/moby/buildkit/issues/1032#issuecomment-938253351) be done per build,
+so try adding the following to `~/.config/buildkit/buildkitd.toml`:
+
+````
+[worker.oci]
+  max-parallelism = 1
 ```
