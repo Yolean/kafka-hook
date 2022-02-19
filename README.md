@@ -67,8 +67,10 @@ GIT_STATUS=$(git status --untracked-files=no --porcelain=v2)
 SOURCE_COMMIT=$(git rev-parse --verify HEAD)
 [ -z "$GIT_STATUS" ] || SOURCE_COMMIT="$SOURCE_COMMIT-dirty"
 docker buildx build --platform=linux/amd64,linux/arm64/v8 -t yolean/kafka-hook:$SOURCE_COMMIT-jvm --build-arg=build="validate" --target=jvm .
-# Expect terrible build performance on non-amd64 hosts
-docker buildx build --platform=linux/amd64 -t yolean/kafka-hook:$SOURCE_COMMIT .
+# On ARM build host such as OSX Docker for Mac
+docker buildx build --platform=linux/arm64/v8 -t yolean/kafka-hook:$SOURCE_COMMIT-arm64 .
+docker buildx build --platform=linux/arm64/v8 -t yolean/kafka-hook:$SOURCE_COMMIT-arm64 --push .
+# For amd64 see nerdctl below
 ```
 
 ## Build using rootless Buildkit + nerdctl
@@ -80,9 +82,19 @@ SOURCE_COMMIT=$(git rev-parse --verify HEAD)
 nerdctl build --platform=linux/amd64,linux/arm64/v8 \
   -t yolean/kafka-hook:$SOURCE_COMMIT-jvm --build-arg=build="validate" --target=jvm .
 nerdctl build --platform=linux/amd64 \
-  -t yolean/kafka-hook:$SOURCE_COMMIT .
+  -t yolean/kafka-hook:$SOURCE_COMMIT-amd64 .
 nerdctl push --platform=linux/amd64,linux/arm64/v8 yolean/kafka-hook:$SOURCE_COMMIT-jvm
-nerdctl push --platform=linux/amd64 yolean/kafka-hook:$SOURCE_COMMIT
+nerdctl push --platform=linux/amd64 yolean/kafka-hook:$SOURCE_COMMIT-amd64
+```
+
+## Combine to a multi-arch image
+
+```
+cat multiarch-native.Dockerfile | docker buildx build --platform=linux/amd64,linux/arm64/v8 \
+  --build-arg=SOURCE_COMMIT="$SOURCE_COMMIT" -t yolean/kafka-hook:$SOURCE_COMMIT -
+# Or
+cat multiarch-native.Dockerfile | nerdctl build --platform=linux/amd64,linux/arm64/v8 \
+  --build-arg=SOURCE_COMMIT="$SOURCE_COMMIT" -t yolean/kafka-hook:$SOURCE_COMMIT -
 ```
 
 ### Workaround for port collision
