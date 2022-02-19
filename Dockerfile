@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM docker.io/yolean/builder-quarkus:8fcf5d01ecddc1253f87f352e02b7760603534e0@sha256:2230db63340d9768c63bae7fdb5662f1b5ffceb9d486e9a742e26102cd41664e \
+FROM --platform=$BUILDPLATFORM docker.io/yolean/builder-quarkus:07bf9f634da62a9525a691924c64a4f79b1f10a5@sha256:054ef0a03ee06c3254213f6c0e2fe43023b396c1d841d528575cf41c096a367e \
   as dev
 
 COPY --chown=nonroot:nogroup pom.xml .
