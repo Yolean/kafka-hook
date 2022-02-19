@@ -1,3 +1,14 @@
+FROM --platform=$TARGETPLATFORM docker.io/yolean/builder-quarkus:07bf9f634da62a9525a691924c64a4f79b1f10a5@sha256:054ef0a03ee06c3254213f6c0e2fe43023b396c1d841d528575cf41c096a367e \
+  as jnilib
+
+# https://github.com/xerial/snappy-java/blob/master/src/main/java/org/xerial/snappy/OSInfo.java#L113
+RUN set -ex; \
+  curl -o snappy.jar -sLSf https://repo1.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.8.4/snappy-java-1.1.8.4.jar; \
+  LIBPATH=$(java -cp snappy.jar org.xerial.snappy.OSInfo); \
+  ARCH=$(java -cp snappy.jar org.xerial.snappy.OSInfo --arch); \
+  mkdir -pv native/$LIBPATH; \
+  cp -v /usr/lib/$ARCH-linux-gnu/jni/* native/$LIBPATH/
+
 FROM --platform=$BUILDPLATFORM docker.io/yolean/builder-quarkus:07bf9f634da62a9525a691924c64a4f79b1f10a5@sha256:054ef0a03ee06c3254213f6c0e2fe43023b396c1d841d528575cf41c096a367e \
   as dev
 
@@ -12,11 +23,13 @@ RUN mkdir -p lib/target rest/target/
 COPY --chown=nonroot:nogroup . .
 
 # https://github.com/quarkusio/quarkus/blob/1.13.1.Final/extensions/kafka-client/deployment/src/main/java/io/quarkus/kafka/client/deployment/KafkaProcessor.java#L194
+# https://github.com/quarkusio/quarkus/blob/2.7.1.Final/extensions/kafka-client/deployment/src/main/java/io/quarkus/kafka/client/deployment/KafkaProcessor.java#L268
 # https://github.com/quarkusio/quarkus/blob/1.13.1.Final/extensions/kafka-client/runtime/src/main/java/io/quarkus/kafka/client/runtime/KafkaRecorder.java#L23
-# RUN
-#   && mkdir -p rest/src/main/resources/org/xerial/snappy/native/Linux/x86_64 \
-#   && cp -v /usr/lib/x86_64-linux-gnu/jni/libsnappyjava.so rest/src/main/resources/org/xerial/snappy/native/Linux/x86_64/libsnappyjava.so \
-#   && ldd -v rest/src/main/resources/org/xerial/snappy/native/Linux/x86_64/libsnappyjava.so
+# https://github.com/quarkusio/quarkus/blob/2.7.1.Final/extensions/kafka-client/runtime/src/main/java/io/quarkus/kafka/client/runtime/KafkaRecorder.java#L26
+# TODO check that for "$build" == "native-image" TARGETPLATFORM == BUILDPLATFORM
+COPY --from=jnilib /workspace/native/Linux rest/src/main/resources/org/xerial/snappy/native/Linux
+# TODO need to verify?
+#RUN ldd -v rest/src/main/resources/org/xerial/snappy/native/Linux/x86_64/libsnappyjava.so
 
 ENTRYPOINT [ "mvn", "quarkus:dev" ]
 CMD [ "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=8080" ]
