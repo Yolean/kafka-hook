@@ -1,0 +1,29 @@
+apiVersion: skaffold/v3
+kind: Config
+build:
+  tagPolicy:
+    gitCommit:
+      variant: CommitSha
+  platforms:
+  - linux/amd64
+  - linux/arm64/v8
+  artifacts:
+  - image: builds-registry.ystack.svc.cluster.local/yolean/kafka-hook
+    context: .
+    custom:
+      buildCommand: y-build --opt target=jvm --opt build-arg:build=package
+      dependencies:
+        dockerfile:
+          path: ./Dockerfile
+# manifests:
+#   kustomize:
+#     paths:
+#     - ./test
+# deploy:
+#   kubectl: {}
+profiles:
+- name: prod-build
+  patches:
+  - op: replace
+    path: /build/artifacts/0/custom/buildCommand
+    value: y-build

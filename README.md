@@ -60,42 +60,25 @@ Not supported:
  - `sync` query parameter (kafka-hook is always sync=true)
  - `key` query parameter
 
-## Building
+## Builds
+
+JVM:
 
 ```
-GIT_STATUS=$(git status --untracked-files=no --porcelain=v2)
-SOURCE_COMMIT=$(git rev-parse --verify HEAD)
-[ -z "$GIT_STATUS" ] || SOURCE_COMMIT="$SOURCE_COMMIT-dirty"
-docker buildx build --platform=linux/amd64,linux/arm64/v8 -t yolean/kafka-hook:$SOURCE_COMMIT-jvm --build-arg=build="validate" --target=jvm .
-# On ARM build host such as OSX Docker for Mac
-docker buildx build --platform=linux/arm64/v8 -t yolean/kafka-hook:$SOURCE_COMMIT-arm64 --progress=plain .
-docker buildx build --platform=linux/arm64/v8 -t yolean/kafka-hook:$SOURCE_COMMIT-arm64 --push .
-# For amd64 see nerdctl below
+y-skaffold build --file-output=images-jvm.json
 ```
 
-## Build using rootless Buildkit + nerdctl
+Single-arch native:
 
 ```
-GIT_STATUS=$(git status --untracked-files=no --porcelain=v2)
-SOURCE_COMMIT=$(git rev-parse --verify HEAD)
-[ -z "$GIT_STATUS" ] || SOURCE_COMMIT="$SOURCE_COMMIT-dirty"
-nerdctl build --platform=linux/amd64,linux/arm64/v8 \
-  -t yolean/kafka-hook:$SOURCE_COMMIT-jvm --build-arg=build="validate" --target=jvm .
-nerdctl build --platform=linux/amd64 --progress=plain \
-  -t yolean/kafka-hook:$SOURCE_COMMIT-amd64 .
-nerdctl push --platform=linux/amd64,linux/arm64/v8 yolean/kafka-hook:$SOURCE_COMMIT-jvm
-nerdctl push --platform=linux/amd64 yolean/kafka-hook:$SOURCE_COMMIT-amd64
+y-skaffold build --platform=linux/[choice-of-arch] -p prod-build --file-output=images-native.json
 ```
 
-## Combine to a multi-arch image
+Multi-arch native
+(expect 3 hrs build time on a 3 core 7Gi Buildkit with qemu):
 
 ```
-cat multiarch-native.Dockerfile | docker buildx build --platform=linux/amd64,linux/arm64/v8 \
-  --build-arg=SOURCE_COMMIT="$SOURCE_COMMIT" -t yolean/kafka-hook:$SOURCE_COMMIT --push -
-# Or
-cat multiarch-native.Dockerfile | nerdctl build --platform=linux/amd64,linux/arm64/v8 \
-  --build-arg=SOURCE_COMMIT="$SOURCE_COMMIT" -t yolean/kafka-hook:$SOURCE_COMMIT -
-nerdctl push --platform=linux/amd64,linux/arm64/v8 yolean/kafka-hook:$SOURCE_COMMIT
+y-skaffold build -p prod-build --file-output=images-native.json
 ```
 
 ### Workaround for port collision
