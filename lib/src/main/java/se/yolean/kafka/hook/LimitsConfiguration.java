@@ -28,8 +28,8 @@ public interface LimitsConfiguration {
   @WithDefault("65536")
   Integer getPayloadBytesCap();
 
-  @WithName("payload-bytes-ellipsis")
-  @WithDefault("")
-  String getPayloadBytesEllipsis();
+  // @WithName("payload-bytes-ellipsis")
+  // @WithDefault("")
+  // String getPayloadBytesEllipsis();
 
 }
