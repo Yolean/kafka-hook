@@ -2,29 +2,34 @@ package se.yolean.kafka.hook;
 
 import java.time.Duration;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
 
-import io.quarkus.arc.config.ConfigProperties;
-
-@ConfigProperties
+@ConfigMapping(prefix = "limits")
 public interface LimitsConfiguration {
 
   /**
    * In case kafka communication halts we'd want to respond before HTTP layers time out.
    */
-  @ConfigProperty(defaultValue = "20")
+  @WithName("produce-timeout")
+  @WithDefault("20")
   Duration getProduceTimeout();
 
-  @ConfigProperty(defaultValue = "97")
+  @WithName("header-value-length-cap")
+  @WithDefault("97")
   Integer getHeaderValueLengthCap();
 
-  @ConfigProperty(defaultValue = "...")
+  @WithName("header-value-ellipsis")
+  @WithDefault("...")
   String getHeaderValueEllipsis();
 
-  @ConfigProperty(defaultValue = "65536")
+  @WithName("payload-bytes-cap")
+  @WithDefault("65536")
   Integer getPayloadBytesCap();
 
-  @ConfigProperty(defaultValue = "")
-  Integer getPayloadBytesEllipsis();
+  // @WithName("payload-bytes-ellipsis")
+  // @WithDefault("")
+  // String getPayloadBytesEllipsis();
 
 }

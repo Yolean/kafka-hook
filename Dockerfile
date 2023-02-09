@@ -1,4 +1,15 @@
-FROM yolean/builder-quarkus:907bcbc85d22a29d3243e2af97a0b09fba2ee4ce@sha256:91ef470b901eb6a0031f278f4a04d26ee1844f514b08826f5e7c16d661d8525d \
+FROM --platform=$TARGETPLATFORM docker.io/yolean/builder-quarkus:1ed32a7cfeea593a0e9e0217549e4a5110a2506f@sha256:44fb87701469e8c153fbd9db0b2c0615e778a02f45229b81817f1206edabf709 \
+  as jnilib
+
+# https://github.com/xerial/snappy-java/blob/master/src/main/java/org/xerial/snappy/OSInfo.java#L113
+RUN set -ex; \
+  curl -o snappy.jar -sLSf https://repo1.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.9.0/snappy-java-1.1.9.0.jar; \
+  LIBPATH=$(java -cp snappy.jar org.xerial.snappy.OSInfo); \
+  ARCH=$(java -cp snappy.jar org.xerial.snappy.OSInfo --arch); \
+  mkdir -pv native/$LIBPATH; \
+  cp -v /usr/lib/$ARCH-linux-gnu/jni/* native/$LIBPATH/
+
+FROM --platform=$TARGETPLATFORM docker.io/yolean/builder-quarkus:1ed32a7cfeea593a0e9e0217549e4a5110a2506f@sha256:44fb87701469e8c153fbd9db0b2c0615e778a02f45229b81817f1206edabf709 \
   as dev
 
 COPY --chown=nonroot:nogroup pom.xml .
@@ -12,31 +23,27 @@ RUN cd model && y-build-quarkus-cache
 COPY --chown=nonroot:nogroup . .
 
 # https://github.com/quarkusio/quarkus/blob/1.13.1.Final/extensions/kafka-client/deployment/src/main/java/io/quarkus/kafka/client/deployment/KafkaProcessor.java#L194
+# https://github.com/quarkusio/quarkus/blob/2.7.1.Final/extensions/kafka-client/deployment/src/main/java/io/quarkus/kafka/client/deployment/KafkaProcessor.java#L268
 # https://github.com/quarkusio/quarkus/blob/1.13.1.Final/extensions/kafka-client/runtime/src/main/java/io/quarkus/kafka/client/runtime/KafkaRecorder.java#L23
-RUN mkdir -p rest/src/main/resources/org/xerial/snappy/native/Linux/x86_64 \
-  && cp -v /usr/lib/x86_64-linux-gnu/jni/libsnappyjava.so rest/src/main/resources/org/xerial/snappy/native/Linux/x86_64/libsnappyjava.so \
-  && ldd -v rest/src/main/resources/org/xerial/snappy/native/Linux/x86_64/libsnappyjava.so
+# https://github.com/quarkusio/quarkus/blob/2.7.1.Final/extensions/kafka-client/runtime/src/main/java/io/quarkus/kafka/client/runtime/KafkaRecorder.java#L26
+# TODO check that for "$build" == "native-image" TARGETPLATFORM == BUILDPLATFORM
+COPY --from=jnilib /workspace/native/Linux rest/src/main/resources/org/xerial/snappy/native/Linux
+# TODO need to verify?
+#RUN ldd -v rest/src/main/resources/org/xerial/snappy/native/Linux/x86_64/libsnappyjava.so
 
-ENTRYPOINT [ "mvn", "quarkus:dev" ]
-CMD [ "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=8080" ]
+ENTRYPOINT [ "mvn", "compile", "quarkus:dev" ]
+CMD [ "-Dquarkus.http.host=0.0.0.0" ]
 
 # The jar and the lib folder is required for the jvm target even when the native target is the end result
-# Also we want to run the tests here, regardless of build target
-RUN mvn --batch-mode package
-# Produce the input to native builds, it's cheap until we actually run native-image
-RUN mvn --batch-mode package -Pnative -Dquarkus.native.additional-build-args=--dry-run -Dmaven.test.skip=true \
-  || echo "= BUILD ERROR IS OK: Producing native-image source jar."
+# MUST be followed by a real build, or we risk pushing images despite test failures
+RUN mvn package -Dmaven.test.skip=true
 
-# Defaults to native-image build because that's the default target
-ARG build="native-image"
-# JVM builds can use a dummy mvn target: --target=jvm --build-arg=build="validate"
-# Native builds can be in-maven (+2GB mem): build="package -Pnative -Dmaven.test.skip=true"
+# For a regular JRE image run: docker build --build-arg build="package" --target=jvm
+ARG build="package -Pnative"
 
-RUN test "$build" = "native-image" || mvn --batch-mode $build
+RUN mvn --batch-mode $build
 
-RUN test "$build" != "native-image" || mvn --batch-mode package -Pnative -Dmaven.test.skip=true
-
-FROM yolean/java:907bcbc85d22a29d3243e2af97a0b09fba2ee4ce@sha256:63674354bd7f6f6660af89b483df98124c7d3062ce1e59a12ec012a47be769a3 \
+FROM --platform=$TARGETPLATFORM docker.io/yolean/runtime-quarkus-ubuntu-jre:1ed32a7cfeea593a0e9e0217549e4a5110a2506f@sha256:ea2db368356c03ce2c5d942f63cf79e58e26a2dfc4f2ec9143f745cff21abc45 \
   as jvm
 
 WORKDIR /app
@@ -49,6 +56,8 @@ ENTRYPOINT [ "java", \
   "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", \
   "-jar", "quarkus-run.jar" ]
 
-FROM yolean/runtime-quarkus-ubuntu:907bcbc85d22a29d3243e2af97a0b09fba2ee4ce@sha256:d192704054b0eb6e089f379a77f83f90fb9ad5061e9748910ce48887766e8b81
+ENV SOURCE_COMMIT=${SOURCE_COMMIT} SOURCE_BRANCH=${SOURCE_BRANCH} IMAGE_NAME=${IMAGE_NAME}
+
+FROM --platform=$TARGETPLATFORM docker.io/yolean/runtime-quarkus-ubuntu:1ed32a7cfeea593a0e9e0217549e4a5110a2506f@sha256:2401f6df940260bde12853d83fb21bbc8df8414915ea75a22196967cf9f1989e
 
 COPY --from=dev /workspace/rest/target/*-runner /usr/local/bin/quarkus

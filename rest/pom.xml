@@ -9,17 +9,7 @@
     <relativePath>../</relativePath>
   </parent>
   <artifactId>kafka-hook-rest</artifactId>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>${quarkus.platform.group-id}</groupId>
-        <artifactId>${quarkus.platform.artifact-id}</artifactId>
-        <version>${quarkus.platform.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>se.yolean</groupId>
@@ -39,10 +29,6 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-jackson</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-logging-json</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -74,25 +60,40 @@
     <dependency>
       <groupId>com.salesforce.kafka.test</groupId>
       <artifactId>kafka-junit5</artifactId>
-      <version>3.2.2</version>
+      <version>3.2.4</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.kafka</groupId>
+          <artifactId>kafka-streams</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-streams</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka_2.12</artifactId>
+      <artifactId>kafka_2.13</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-maven-plugin</artifactId>
-        <!-- An attempt to support mvn quarkus:dev as in https://stackoverflow.com/questions/59075116/maven-multi-module-project-with-quarkus-in-dev-mode -->
-        <configuration>
-          <skip>false</skip>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+
+  <profiles>
+    <profile>
+      <id>native</id>
+      <activation>
+        <property>
+          <name>native</name>
+        </property>
+      </activation>
+      <properties>
+        <skipITs>false</skipITs>
+        <quarkus.package.type>native</quarkus.package.type>
+      </properties>
+    </profile>
+  </profiles>
+
 </project>
