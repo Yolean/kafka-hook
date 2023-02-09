@@ -60,12 +60,37 @@ Not supported:
  - `sync` query parameter (kafka-hook is always sync=true)
  - `key` query parameter
 
-## Building
+## Builds
+
+JVM:
 
 ```
-GIT_STATUS=$(git status --untracked-files=no --porcelain=v2)
-SOURCE_COMMIT=$(git rev-parse --verify HEAD)
-[ -z "$GIT_STATUS" ] || SOURCE_COMMIT="$SOURCE_COMMIT-dirty"
-docker buildx build -t yolean/kafka-hook:$SOURCE_COMMIT-jvm --target=jvm .
-docker buildx build -t yolean/kafka-hook:$SOURCE_COMMIT .
+y-skaffold build --file-output=images-jvm.json
+```
+
+Single-arch native:
+
+```
+y-skaffold build --platform=linux/[choice-of-arch] -p prod-build --file-output=images-native.json
+```
+
+Multi-arch native
+(expect 3 hrs build time on a 3 core 7Gi Buildkit with qemu):
+
+```
+y-skaffold build -p prod-build --file-output=images-native.json
+```
+
+### Workaround for port collision
+
+Note that buildkit defaults to running patforms in parallel,
+which means that when Quarkus allocates a port during unit tests
+one of the builds is likely to fail on port already in use.
+
+Can [not](https://github.com/moby/buildkit/issues/1032#issuecomment-938253351) be done per build,
+so try adding the following to `~/.config/buildkit/buildkitd.toml`:
+
+````
+[worker.oci]
+  max-parallelism = 1
 ```

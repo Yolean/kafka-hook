@@ -1,29 +1,35 @@
 package se.yolean.kafka.hook;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
 
-import io.quarkus.arc.config.ConfigProperties;
-
-@ConfigProperties
+@ConfigMapping(prefix = "cloudevent")
 public interface CloudeventConfiguration {
 
+  @WithName("type-prefix")
   String getTypePrefix();
 
+  @WithName("source-host")
   String getSourceHost();
 
-  @ConfigProperty(defaultValue = "traceparent")
+  @WithName("traceparent-header")
+  @WithDefault("traceparent")
   String getTraceparentHeader();
 
-  @ConfigProperty(defaultValue = "tracestate")
+  @WithName("tracestate-header")
+  @WithDefault("tracestate")
   String getTracestateHeader();
 
-  @ConfigProperty(defaultValue = "hook_")
+  @WithName("http-extension-prefix")
+  @WithDefault("hook_")
   String getHttpExtensionPrefix();
 
   /**
    * @return regex for header names to exclude (matching will be case insensitive)
    */
-  @ConfigProperty(defaultValue = "^(cookie)$")
+  @WithName("headers-exclude")
+  @WithDefault("^(cookie)$")
   String getHeadersExclude();
 
 }
