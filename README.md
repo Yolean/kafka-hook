@@ -94,3 +94,17 @@ so try adding the following to `~/.config/buildkit/buildkitd.toml`:
 [worker.oci]
   max-parallelism = 1
 ```
+
+## Dev
+
+```
+mvn quarkus:dev --projects=rest \
+  -Dcloudevent.source-host=https://test.example.net \
+  -Dcloudevent.type-prefix=net.example.test.
+
+curl --header "Content-Type: application/json" --request POST \
+  --data '{"n":1}' \
+  http://localhost:8080/hook/v1/my-event-type
+
+rpk topic --brokers localhost:9092 consume testevents -n 1
+```
