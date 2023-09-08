@@ -3,16 +3,16 @@
   <groupId>se.yolean</groupId>
   <artifactId>quarkus-mpxj-parent</artifactId>
   <versioning>
-    <lastUpdated>20230907150549</lastUpdated>
+    <lastUpdated>20230908064253</lastUpdated>
     <snapshot>
-      <timestamp>20230907.150549</timestamp>
-      <buildNumber>2</buildNumber>
+      <timestamp>20230908.064253</timestamp>
+      <buildNumber>3</buildNumber>
     </snapshot>
     <snapshotVersions>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>1.0.0-20230907.150549-2</value>
-        <updated>20230907150549</updated>
+        <value>1.0.0-20230908.064253-3</value>
+        <updated>20230908064253</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
