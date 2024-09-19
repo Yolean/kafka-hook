@@ -8,18 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -37,7 +34,6 @@ import se.yolean.kafka.hook.Producer;
 import se.yolean.kafka.hook.cloudevents.IncomingWebhookExtension;
 import se.yolean.kafka.hook.types.v1.HookError;
 import se.yolean.kafka.hook.types.v1.HookMessageKey;
-import se.yolean.kafka.hook.types.v1.HookReceipt;
 
 @ApplicationScoped
 public class KafkaHookResource {
@@ -96,10 +92,8 @@ public class KafkaHookResource {
     HookMessageKey key = new HookMessageKey();
     key.setId(id);
     key.setType(type);
-    Future<RecordMetadata> resultMaybe = producer.send(key, message);
-    RecordMetadata result;
     try {
-      result = resultMaybe.get(limits.getProduceTimeout().toSeconds(), TimeUnit.SECONDS);
+      producer.send(key, message).get(limits.getProduceTimeout().toSeconds(), TimeUnit.SECONDS);
     } catch (InterruptedException e) {
       err.setError(HookError.Error.INTERRUPTED);
       logger.error("Producer send interrupted", e);
@@ -123,12 +117,8 @@ public class KafkaHookResource {
       countProduceErrors.get(err.getError()).increment();
       return Response.serverError().entity(err).build();
     }
-    HookReceipt receipt = new HookReceipt();
-    receipt.setId(id);
-    receipt.setPartition(result.partition());
-    receipt.setOffset(result.offset());
-    receipt.setTimestamp(result.timestamp());
-    return Response.ok(receipt, MediaType.APPLICATION_JSON).build();
+
+    return Response.accepted().build();
   }
 
 }
