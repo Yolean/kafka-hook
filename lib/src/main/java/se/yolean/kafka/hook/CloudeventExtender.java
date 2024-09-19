@@ -3,10 +3,10 @@ package se.yolean.kafka.hook;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.UriInfo;
 
 import io.cloudevents.core.extensions.DistributedTracingExtension;
 import se.yolean.kafka.hook.cloudevents.IncomingWebhookExtension;
