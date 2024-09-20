@@ -25,7 +25,6 @@ import io.restassured.http.ContentType;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -128,9 +127,7 @@ public class KafkaHookResourceIntegrationTest {
       .body("test1".getBytes())
       .when().post("/hook/v1")
       .then()
-        .body(containsString("\"partition\":0"))
-        .body(containsString("\"offset\":" + (startOffset)))
-        .statusCode(200);
+        .statusCode(202);
     given()
       .contentType(ContentType.TEXT)
       .accept(ContentType.JSON)
@@ -139,8 +136,7 @@ public class KafkaHookResourceIntegrationTest {
       .body("test2".getBytes())
       .when().post("/hook/v1/mytype")
       .then()
-        .body(containsString("\"offset\":" + (startOffset + 1)))
-        .statusCode(200);
+        .statusCode(202);
     waitBetweenPolls();
     ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
     assertEquals(2, records.count(), "Should have produced two messages");
@@ -169,24 +165,21 @@ public class KafkaHookResourceIntegrationTest {
       .body("test1".getBytes())
       .when().post("/hook/v1/mytype/with/slashes")
       .then()
-        .body(containsString("\"offset\":" + (startOffset)))
-        .statusCode(200);
+        .statusCode(202);
     given()
       .contentType(ContentType.TEXT)
       .accept(ContentType.JSON)
       .body("test2".getBytes())
       .when().post("/some-prefix/v1/hook")
       .then()
-        .body(containsString("\"offset\":" + (startOffset + 1)))
-        .statusCode(200);
+        .statusCode(202);
     given()
       .contentType(ContentType.TEXT)
       .accept(ContentType.JSON)
       .body("test3".getBytes())
       .when().post("/some-prefix/v1/hook/sub/type/")
       .then()
-        .body(containsString("\"offset\":" + (startOffset + 2)))
-        .statusCode(200);
+        .statusCode(202);
     waitBetweenPolls();
     ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
     Iterator<ConsumerRecord<String, String>> it = records.iterator();
@@ -209,9 +202,7 @@ public class KafkaHookResourceIntegrationTest {
       .body("test1".getBytes())
       .when().post("/hook/v1")
       .then()
-        .body(containsString("\"partition\":0"))
-        .body(containsString("\"offset\":" + (startOffset)))
-        .statusCode(200);
+        .statusCode(202);
     waitBetweenPolls();
     ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
     assertEquals(1, records.count(), "Should have produced one message");
