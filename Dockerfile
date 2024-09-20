@@ -1,4 +1,4 @@
-FROM --platform=$TARGETPLATFORM docker.io/yolean/builder-quarkus:1ed32a7cfeea593a0e9e0217549e4a5110a2506f@sha256:44fb87701469e8c153fbd9db0b2c0615e778a02f45229b81817f1206edabf709 \
+FROM --platform=$TARGETPLATFORM ghcr.io/yolean/builder-quarkus:0ab2411c78f7bb4d2daebbf3fc1f270af3776578@sha256:4992c2ad9ba58ea600e450d1eaa0b17df756407942590159814b181a1307a5f0 \
   as jnilib
 
 # https://github.com/xerial/snappy-java/blob/master/src/main/java/org/xerial/snappy/OSInfo.java#L113
@@ -9,7 +9,7 @@ RUN set -ex; \
   mkdir -pv native/$LIBPATH; \
   cp -v /usr/lib/$ARCH-linux-gnu/jni/* native/$LIBPATH/
 
-FROM --platform=$TARGETPLATFORM docker.io/yolean/builder-quarkus:1ed32a7cfeea593a0e9e0217549e4a5110a2506f@sha256:44fb87701469e8c153fbd9db0b2c0615e778a02f45229b81817f1206edabf709 \
+FROM --platform=$TARGETPLATFORM ghcr.io/yolean/builder-quarkus:0ab2411c78f7bb4d2daebbf3fc1f270af3776578@sha256:4992c2ad9ba58ea600e450d1eaa0b17df756407942590159814b181a1307a5f0 \
   as dev
 
 COPY --chown=nonroot:nogroup pom.xml .
@@ -43,7 +43,7 @@ ARG build="package -Pnative"
 
 RUN mvn --batch-mode $build
 
-FROM --platform=$TARGETPLATFORM docker.io/yolean/runtime-quarkus-ubuntu-jre:1ed32a7cfeea593a0e9e0217549e4a5110a2506f@sha256:ea2db368356c03ce2c5d942f63cf79e58e26a2dfc4f2ec9143f745cff21abc45 \
+FROM --platform=$TARGETPLATFORM ghcr.io/yolean/runtime-quarkus-ubuntu-jre:0ab2411c78f7bb4d2daebbf3fc1f270af3776578@sha256:ce1ae9f9993ac0ff05100276dc0413a587c1db042c9337b31a9194fa493c09c0 \
   as jvm
 
 WORKDIR /app
@@ -58,6 +58,6 @@ ENTRYPOINT [ "java", \
 
 ENV SOURCE_COMMIT=${SOURCE_COMMIT} SOURCE_BRANCH=${SOURCE_BRANCH} IMAGE_NAME=${IMAGE_NAME}
 
-FROM --platform=$TARGETPLATFORM docker.io/yolean/runtime-quarkus-ubuntu:1ed32a7cfeea593a0e9e0217549e4a5110a2506f@sha256:2401f6df940260bde12853d83fb21bbc8df8414915ea75a22196967cf9f1989e
+FROM --platform=$TARGETPLATFORM ghcr.io/yolean/runtime-quarkus-ubuntu:0ab2411c78f7bb4d2daebbf3fc1f270af3776578@sha256:70bbcf56fc7061f6bf97fda8761dde75ef0a52cf07452da20f66c357cd41cfac
 
 COPY --from=dev /workspace/rest/target/*-runner /usr/local/bin/quarkus
