@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>se.yolean</groupId>
+  <artifactId>quarkus-mpxj-parent</artifactId>
+  <versioning>
+    <lastUpdated>20241114111343</lastUpdated>
+    <snapshot>
+      <timestamp>20241114.111343</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1.1.0-20241114.111343-1</value>
+        <updated>20241114111343</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+  <version>1.1.0-SNAPSHOT</version>
+</metadata>
