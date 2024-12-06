@@ -2,14 +2,21 @@
 [ -z "$DEBUG" ] || set -x
 set -eo pipefail
 
-MVNREPOPROJECT=$PWD
-cd ../quarkus-gitea
+REPOHOME=$PWD
+DEPLOYNAME=quarkus-gitea
+DEPLOYROOT=../$DEPLOYNAME
+rm -r "$DEPLOYROOT/snapshots" || true
+mkdir -p "$DEPLOYROOT/snapshots/se/yolean"
+rsync -av "$REPOHOME/snapshots/se/yolean/$DEPLOYNAME"* "$DEPLOYROOT/snapshots/se/yolean"
+
+cd $DEPLOYROOT
 git status && test -z "$(git status --porcelain)"
-GITREF=$(git rev-parse HEAD);
+GITREF=$(git rev-parse HEAD)
 mvn clean deploy
-cd $MVNREPOPROJECT
-cp -av ../quarkus-gitea/snapshots/se/yolean/quarkus-gitea* snapshots/se/yolean
-git add -f snapshots/se/yolean/quarkus-gitea*
+cd $REPOHOME
+
+rsync -av "$DEPLOYROOT/snapshots/se/yolean/$DEPLOYNAME"* "$REPOHOME/snapshots/se/yolean"
+git add -f "snapshots/se/yolean/$DEPLOYNAME"*
 git diff --cached --stat
-git commit -m "quarkus-fortnox $GITREF"
+git commit -m "$DEPLOYNAME $GITREF"
 echo "TODO Review and push manually."
