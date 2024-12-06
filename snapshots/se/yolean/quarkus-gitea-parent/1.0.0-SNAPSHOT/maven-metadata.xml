@@ -3,16 +3,16 @@
   <groupId>se.yolean</groupId>
   <artifactId>quarkus-gitea-parent</artifactId>
   <versioning>
-    <lastUpdated>20241206104458</lastUpdated>
+    <lastUpdated>20241206202011</lastUpdated>
     <snapshot>
-      <timestamp>20241206.104458</timestamp>
-      <buildNumber>1</buildNumber>
+      <timestamp>20241206.202011</timestamp>
+      <buildNumber>2</buildNumber>
     </snapshot>
     <snapshotVersions>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>1.0.0-20241206.104458-1</value>
-        <updated>20241206104458</updated>
+        <value>1.0.0-20241206.202011-2</value>
+        <updated>20241206202011</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
