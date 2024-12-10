@@ -3,21 +3,21 @@
   <groupId>se.yolean</groupId>
   <artifactId>quarkus-fortnox</artifactId>
   <versioning>
-    <lastUpdated>20241210135301</lastUpdated>
+    <lastUpdated>20241210142531</lastUpdated>
     <snapshot>
-      <timestamp>20241210.135301</timestamp>
-      <buildNumber>2</buildNumber>
+      <timestamp>20241210.142531</timestamp>
+      <buildNumber>3</buildNumber>
     </snapshot>
     <snapshotVersions>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>1.0.0-20241210.135301-2</value>
-        <updated>20241210135301</updated>
+        <value>1.0.0-20241210.142531-3</value>
+        <updated>20241210142531</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>jar</extension>
-        <value>1.0.0-20241210.135301-2</value>
-        <updated>20241210135301</updated>
+        <value>1.0.0-20241210.142531-3</value>
+        <updated>20241210142531</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
