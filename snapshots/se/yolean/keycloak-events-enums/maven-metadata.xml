@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>se.yolean</groupId>
+  <artifactId>keycloak-events-enums</artifactId>
+  <versioning>
+    <versions>
+      <version>26.1.4-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20250331123455</lastUpdated>
+  </versioning>
+</metadata>

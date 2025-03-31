@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>se.yolean</groupId>
+  <artifactId>keycloak-events-enums</artifactId>
+  <versioning>
+    <lastUpdated>20250331123455</lastUpdated>
+    <snapshot>
+      <timestamp>20250331.123455</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>26.1.4-20250331.123455-1</value>
+        <updated>20250331123455</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>26.1.4-20250331.123455-1</value>
+        <updated>20250331123455</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+  <version>26.1.4-SNAPSHOT</version>
+</metadata>
