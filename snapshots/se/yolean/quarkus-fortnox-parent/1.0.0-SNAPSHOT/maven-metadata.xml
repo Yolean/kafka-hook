@@ -3,16 +3,16 @@
   <groupId>se.yolean</groupId>
   <artifactId>quarkus-fortnox-parent</artifactId>
   <versioning>
-    <lastUpdated>20241210142531</lastUpdated>
+    <lastUpdated>20250508071620</lastUpdated>
     <snapshot>
-      <timestamp>20241210.142531</timestamp>
-      <buildNumber>3</buildNumber>
+      <timestamp>20250508.071620</timestamp>
+      <buildNumber>4</buildNumber>
     </snapshot>
     <snapshotVersions>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>1.0.0-20241210.142531-3</value>
-        <updated>20241210142531</updated>
+        <value>1.0.0-20250508.071620-4</value>
+        <updated>20250508071620</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
