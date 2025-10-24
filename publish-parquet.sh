@@ -7,7 +7,9 @@ DEPLOYNAME=quarkus-parquet
 DEPLOYROOT=../$DEPLOYNAME
 rm -r "$DEPLOYROOT/snapshots" || true
 mkdir -p "$DEPLOYROOT/snapshots/se/yolean"
-rsync -av "$REPOHOME/snapshots/se/yolean/$DEPLOYNAME"* "$DEPLOYROOT/snapshots/se/yolean"
+if [ -d "$REPOHOME/snapshots/se/yolean/$DEPLOYNAME" ]; then
+  rsync -av "$REPOHOME/snapshots/se/yolean/$DEPLOYNAME"* "$DEPLOYROOT/snapshots/se/yolean"
+fi
 
 cd $DEPLOYROOT
 git status && test -z "$(git status --porcelain)"
