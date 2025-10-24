@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>se.yolean</groupId>
+  <artifactId>quarkus-parquet-integration-tests</artifactId>
+  <versioning>
+    <versions>
+      <version>1.0.0-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20251024050948</lastUpdated>
+  </versioning>
+</metadata>
