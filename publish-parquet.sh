@@ -14,6 +14,7 @@ fi
 cd $DEPLOYROOT
 git status && test -z "$(git status --porcelain)"
 GITREF=$(git rev-parse HEAD)
+mvn verify -Dnative
 mvn clean deploy
 cd $REPOHOME
 
