@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>se.yolean</groupId>
+  <artifactId>quarkus-gitea</artifactId>
+  <versioning>
+    <lastUpdated>20251027083048</lastUpdated>
+    <snapshot>
+      <timestamp>20251027.083048</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1.0.1-20251027.083048-1</value>
+        <updated>20251027083048</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>1.0.1-20251027.083048-1</value>
+        <updated>20251027083048</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+  <version>1.0.1-SNAPSHOT</version>
+</metadata>
